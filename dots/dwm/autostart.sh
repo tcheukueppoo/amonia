@@ -17,16 +17,18 @@ conk() {
 
 # setting monitor(s)
 output() {
-	outputs="$(xrandr --query | fgrep ' connected ' | \
+	local outputs="$(xrandr --query | fgrep ' connected ' | \
 		sed -nE 's/([-[:alnum:]]+).*/\1/p')"
-	nout=$(echo "$outputs" | wc -l)
+	local nout=$(echo "$outputs" | wc -l)
 	
 	# only change gamma if there's only one monitor
 	if [ $nout -eq 1 ]; then
 		xrandr --output "$outputs" --brightness 0.6
 		return
 	fi
-	cont=true
+	local out
+	local prev
+	local cont=true
 	echo "$outputs" | \
 	while read out; do
 		if [ $cont = false ]; then

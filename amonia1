@@ -63,12 +63,13 @@ archlinux()
 		hashcat cowpatty reaver bully hcxpcapngtool
 		xclip texinfo python python-pip dictd
 		wpa_supplicant e2fsprogs gptfdisk youtube-dl
-		cronie kakoune surfraw xautolock cups
+		kakoune surfraw xautolock cups
 		gutenprint gnuplot lsof usbutils psmisc
 		hdparm dosfstools parted
 		lsof fzf telegram-desktop sysstat 
 		libvirt vagrant qemu dnsmasq ebtables
 		xcompmgr
+		cronie
 	'
 	pacman -ySu && pacman --no-confirm -S "$getarchpackages"
 }
