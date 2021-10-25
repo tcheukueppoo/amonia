@@ -1,4 +1,4 @@
 MAILTO=kueppo
 
 # change wallpaper every 10
-30 * * * *	chwal "/mnt2/media/images"
+* * * * *	chwal /mnt2/media/images
