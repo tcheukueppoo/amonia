@@ -2,8 +2,21 @@ syntax on
 colorscheme onehalflight
 
 " settings
-set tabstop=4
 set number
+set relativenumber
+
+set showmatch " highlight the matched text
+set ignorecase
+set nowrap
+set smartcase
+set hlsearch
+set incsearch
+
+set ruler
+
+set autoindent
+set tabstop=4
+"set smartindent
 
 " mappings in the insert mode
 inoremap ( ()
