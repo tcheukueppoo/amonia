@@ -1,0 +1,48 @@
+#!/usr/bin/env sh
+
+# set the desktop session to determine if dwm is running
+if test "x$DESKTOP_SESSION" = "x"; then
+	DESKTOP_SESSION='dwm'
+	export DESKTOP_SESSION
+fi
+
+# XDG_CONFIG_HOME defines the directory relative to which
+# user specific configuration should be store, so set it if empty
+if test "x$XDG_CONFIG_HOME" = "x"; then
+	XDG_CONFIG_HOME="$HOME/.config"
+	export XDG_CONFIG_HOME
+	mkdir -p $XDG_CONFIG_HOME
+fi
+
+# XDG_CACHE_HOME defines the directory relative to which
+# user non-essential files are stored, so set if empty
+if test "x$XDG_CACHE_HOME" = "x"; then
+	XDG_CACHE_HOME="$HOME/.cache"
+	export XDG_CACHE_HOME
+	mkdir -p $XDG_CACHE_HOME
+fi
+
+# setting XDG env variables
+XDG_DOWNLOAD_DIR="$HOME/Downloads" && export XDG_DOWNLOAD_DIR
+XDG_PUBLICSHARE_DIR="$HOME/Public" && export XDG_PUBLICSHARE_DIR
+XDG_DOCUMENTS_DIR="$HOME/Documents" && export XDG_DOCUMENTS_DIR
+XDG_MUSIC_DIR="$HOME/Music" && export XDG_MUSIC_DIR
+XDG_PICTURES_DIR="$HOME/Pictures" && export XDG_PICTURES_DIR
+XDG_VIDEOS_DIR="$HOME/Videos" && export XDG_VIDEOS_DIR
+
+# load all possible xresources configuration
+xresources=''
+test -r "$HOME/.Xresources" && xresources="$HOME/.Xresources"
+test -r "$HOME/.Xdefaults" && xresources=" $xresources $HOME/.Xdefaults"
+cat /dev/null $xresources | xrdb -merge -
+
+# set keyboard layouts
+command -V setxkbmap && setxkbmap -layout fr
+
+# setting WM_NAME X11 property of the root window (for status text in dwm).
+# you could still use autostart patch for dwm from suckless.org
+#command -V shslstatus && shslstatus &
+command -V slstatus && slstatus &
+
+# start WM
+exec dwm

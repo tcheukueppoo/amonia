@@ -1,0 +1,15 @@
+syntax on
+
+" settings
+set tabstop=4
+set number
+
+" mappings in the insert mode
+inoremap ( ()
+inoremap " ""
+inoremap ' ''
+inoremap [ []
+inoremap { {}
+
+" highlight groups
+hi LineNr ctermfg=White

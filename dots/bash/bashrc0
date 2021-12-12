@@ -1,0 +1,74 @@
+#!/bin/bash
+
+# alias definitions
+if [ -x /usr/bin/dircolors ]; then
+
+	alias ll='ls --color=auto -lA'
+	alias ls='ls --color=auto'
+	alias grep='grep --color=auto'
+	alias fgrep='fgrep --color=auto'
+	alias egrep='egrep --color=auto'
+	alias ohome='cd /mnt/home/kuttix'
+fi
+alias cds='cd ~/.local/bin'
+alias ta="tmux attach"
+alias td="tmux detach"
+alias t="tmux"
+alias cj='cd /mnt/home/kuttix/Projects'
+
+commad -V bat >/dev/null 2>&1 && alias bat="bat --theme 'TwoDark'"
+commad -V batcat >/dev/null 2>&1 && alias bat="batcat --theme 'TwoDark'"
+
+# Prompt definition
+PS1='\[\e[1;32m(\#\e[0m\]\[\e[1;34m,\e[0m\]\[\e[1;36m\j)\e[0m\] \u\[\e[1;35m@\e[0m\]\h \[\e[1;31m\W\e[0m\] $ '
+PS3='>> '
+PS2='\[\033[1;33m\]>\[\033[0m\] '
+
+mkdir -p ~/.local && mkdir -p ~/.local/bin
+
+function __prepend ()
+{
+	toadd="${1}"
+	[ $# != 1 ] && return 1
+	if [ \( ! -d "$toadd" \) -a \( ! -x "$toadd" \) ]; then
+		echo "__prepend : $toadd, No such file or directory"
+		return 1
+	fi
+	# verifying if exist
+	if ! { echo "$PATH" | grep -Eq ":?${toadd%/}:?"; }; then
+		export eval PATH="$toadd${PATH:+:${PATH}}"
+	fi
+	return 0
+}
+__prepend ${HOME}/.local/bin/
+
+# shell options 
+shopt -s histappend
+
+HISTCONTROL=ignoreboth
+HISTSIZE=1000000
+HISTFILESIZE=10000000
+
+shopt -s checkwinsize
+
+# enable programmable completion features
+if ! shopt -oq posix; then
+	if [ -f /usr/share/bash-completion/bash_completion ]; then
+		. /usr/share/bash-completion/bash_completion
+	elif [ -f /etc/bash_completion ]; then
+		. /etc/bash_completion
+	fi
+fi
+
+function makeft
+{
+	testfile='/tmp/test.sh'
+	if [ -x "$testfile" ]; then
+		truncate --size 0 $testfile
+	else
+		touch $testfile && chmod u+x $testfile
+	fi
+	alias etest='/tmp/test.sh'
+	echo "#!/bin/bash" > $testfile
+	vim $testfile
+}

@@ -1,0 +1,56 @@
+# would you die if you use the default
+# mappings? it's always available AHH!!
+set selection-clipboard clipboard
+set window-title-home-tilde true
+set statusbar-home-tilde true
+set page-padding 0
+
+set font "Fantasque Sans Mono 15"
+#set window-height 1024
+#set window-width 768
+set render-loading false
+set adjust-open "best-fit"
+set synctex true
+set synctex-editor-command "nvr --remote +%{line} %{file}"
+# Fix following links(!)
+set sandbox none
+
+# stop at page boundaries
+set scroll-page-aware true
+set scroll-full-overlap 0.01
+set scroll-step 50
+set incremental-search true
+set guioptions ""
+
+set recolor			true
+set recolor-keephue		true
+# kubox colorscheme
+set default-bg                  "#dedede"
+set default-fg                  "#dedede"
+set statusbar-fg                "#1b1b1f"
+set statusbar-bg                "#dedede"
+set inputbar-bg                 "#dedede"
+set inputbar-fg                 "#1b1b1f"
+set notification-bg             "#dedede"
+set notification-fg             "#458588"
+set notification-error-bg       "#dedede"
+set notification-error-fg       "#a35d5d"
+set notification-warning-bg     "#dedede"
+set notification-warning-fg     "#a35d5d"
+set highlight-color             "#444444"
+set highlight-active-color      "#458588"
+set completion-bg               "#dedede"
+set completion-fg               "#1b1b1f"
+set completion-highlight-fg     "#dedede"
+set completion-highlight-bg     "#458588"
+set recolor-lightcolor          "#002b36"
+set recolor-darkcolor           "#1b1b1f"
+set recolor-lightcolor			"#dedede"
+set completion-group-bg         "#19191c"
+set completion-group-fg         "#1b1b1f"
+set index-bg					"#dedede"
+set index-fg					"#1b1b1f"
+set index-active-bg				"#458588"
+set index-active-fg				"#1b1b1f"
+
+# vim: ft=cfg

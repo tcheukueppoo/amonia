@@ -1,0 +1,35 @@
+# my READLINE configuration, this is apply to
+# all program(for example bash interative shell)
+# which uses readline at startup.
+
+set disable-completion off
+set blink-matching-paren on
+set colored-completion-prefix on
+set colored-stats
+set comment-begin #
+set completion-display-width -1
+set completion-ignore-case on
+set completion-map-case on
+#set completion-prefix-display-length 1
+set completion-query-items 2000000
+set convert-meta on
+set echo-control-characters on
+set editing-mode vi
+set show-mode-in-prompt on
+#set expand-tilde on
+set enable-meta-key on
+set enable-keypad on
+set history-preserve-point on
+# set an unlimited number of
+# history entries.
+set history-size -1
+set horizontal-scroll-mode on
+set keymap vi-command
+set vi-ins-mode-string "+ "
+set vi-cmd-mode-string "- "
+
+set meta-flag on
+set input-meta on
+set convert-meta off
+set output-meta on
+#set show-mode-in-prompt on

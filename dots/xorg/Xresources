@@ -1,0 +1,92 @@
+! Xresources configuration for clients
+
+*foreground:               #000000
+*.foreground:              #000000
+
+*background:               #dedede
+*.background:              #dedede
+
+! black
+*.color0:                  #dedede
+*color0:                   #dedede
+! red
+*.color1:                  #a35d5d
+*color1:                   #a35d5d
+! green
+*.color2:                  #32a883
+*color2:                   #32a883
+! yellow
+*.color3:                  #b6bd5c
+*color3:                   #b6bd5c
+! blue
+*.color4:                  #328fa8
+*color4:                   #328fa8
+! magenta
+*.color5:                  #32a88b
+*color5:                   #32a88b
+! cyan
+*.color6:                  #31688b
+*color6:                   #31688b
+! white
+*.color7:                  #b4cad9
+*color7:                   #b4cad9
+
+! bright colors
+! black
+*.color8:                  #928374
+*color8:                   #928374
+! red
+*.color9:                  #fb4934
+*color9:                   #fb4934
+! green
+*.color10:                 #b8bb26
+*color10:                  #b8bb26
+! yellow
+*.color11:                 #fabd2f
+*color11:                  #fabd2f
+! blue
+*.color12:                 #83a598
+*color12:                  #83a598
+! magenta
+*.color13:                 #d3869b
+*color13:                  #d3869b
+! cyan
+*.color14:                 #8ec07c
+*color14:                  #8ec07c
+! white
+*.color15:                 #1b1b1f
+*color15:                  #1b1b1f
+
+!! for xclock
+XClock*foreground:         #b4cad9
+XClock*background:         #1d2021
+
+!! for st
+! blue, color4
+st.cursorColor:            #458588
+
+!! for slock
+!! white, color7
+slock.color_pam:           #b4cad9
+!! white, color7
+slock.text_color:          #b4cad9
+
+st.font1:                  FantasqueSansMono Nerd Font:size=12
+st.font2:                  JetBrainsMono Nerd Font=Regular:size=10.2
+st.borderpx:               15
+st.blinktimeout:           500
+st.termname:               st-256color
+st.cursorthickness:        100
+st.opaqueValue:	           1
+
+slock.font:		   Cooper Hewitt:size=90
+slock.blur_radius:         20
+
+!! X11 applications setting
+Xft.hinting:		   1
+Xft.hintstyle:		   hintslight
+Xft.antialias:		   1
+Xft.rgba:		   rgb
+Xft.autohint:		   0
+Xft.lcdfilter:		   lcddefault
+Xft.font:		   FantasqueSansMono Nerd Font:size=20
