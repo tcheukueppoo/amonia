@@ -37,7 +37,10 @@ test -r "$HOME/.Xdefaults" && xresources=" $xresources $HOME/.Xdefaults"
 cat /dev/null $xresources | xrdb -merge -
 
 # set keyboard layouts
-command -V setxkbmap && setxkbmap -layout fr
+command -V setxkbmap && setxkbmap -layout fr &
+
+# xcompmgr
+command -v xcompmgr && xcompmgr &
 
 # setting WM_NAME X11 property of the root window (for status text in dwm).
 # you could still use autostart patch for dwm from suckless.org

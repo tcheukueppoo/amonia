@@ -1,4 +1,5 @@
 syntax on
+colorscheme onehalflight
 
 " settings
 set tabstop=4
@@ -12,4 +13,7 @@ inoremap [ []
 inoremap { {}
 
 " highlight groups
-hi LineNr ctermfg=White
+hi LineNr ctermfg=White ctermbg=NONE
+hi EndOfBuffer ctermbg=NONE
+hi Normal ctermbg=NONE
+hi Normal guibg=NONE ctermbg=NONE
