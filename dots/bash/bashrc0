@@ -5,16 +5,12 @@
 ####################
 ### aliases
 ####################
-alias t='tmux'
-alias ta='tmux attach'
-alias td='tmux detach'
 alias ett='/tmp/test.sh'
 alias ll='ls --color=auto -lA'
 alias ls='ls --color=auto'
 alias grep='grep --color=auto'
 alias fgrep='fgrep --color=auto'
 alias egrep='egrep --color=auto'
-alias got="history | sed -n 's/^ *[0-9]\+\(.*\)/\1/p' | grep 'cd \+[/~]' | sort -u | fzf | sh"
 
 ####################
 ### envar def
@@ -50,22 +46,42 @@ adpath() {
 	fi
 }
 
+got() {
+	local comd="$(history | sed -n 's/^ *[0-9]\+ \+\(.*\)$/\1/p' | \
+			grep 'cd \+[/~]' | sort -u | fzf --layout=reverse)"
+	eval $comd
+}
+
 stmux() {
-	local i=1
-	local numb=0
-	local targt=0
+	local projs="$HOME/projects"
+	local i=1 numb=0 targt=0
 
 	if tmux list-sessions &>/dev/null; then
 		numb=$(tmux list-sessions | wc -l)
-		printf 'Choose a session to attach\n'
+		printf 'choose a session to attach\n\n'
 		tmux list-sessions | while read line; do
 			printf '%s) %s\n' $i "$line"
 			((i++))
 		done
 	fi
-	printf 'Enter the name of your new session\n'
-	read ans
-	if [ -z "$ans" ]; then
+	printf '\nenter the name of your new tmux session or\n'
+	printf 'type %s<Enter> to fuzzy select your projects\n' 'f'
+	printf 'type %s<Enter> to avoid tmux\n' 'd'
+	read -s ans && tput clear
+	if [ x"$ans" == xd ]; then
+		: # use the terminal
+	elif [ x"$ans" == xf ]; then
+		if [ -d "$projs" ]; then
+			targt="$(ls "$projs" | fzf --preview="ls -F '$projs/{}'")"
+			if [ -n "$targt" ]; then
+				if tmux has-session -t "$targt" &>/dev/null; then
+					printf 'a session named %s already exist\n' "$targt"
+				elif [ -d "$projs/$targt" ]; then
+					tmux new-session -s "$targt"
+				fi
+			fi
+		fi
+	elif [ x"$ans" == x ]; then
 		tmux new-session
 	elif echo "$ans" | grep -q '^[0-9]\+$'; then
 		if [ $ans -ge 1 ] && [ $ans -le $numb ]; then
@@ -86,3 +102,4 @@ adpath "$HOME/.local/bin"
 if [ -z "$TMUX" ]; then
 	command -v tmux &>/dev/null && stmux
 fi
+unset stmux adpath
