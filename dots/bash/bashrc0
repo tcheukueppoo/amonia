@@ -102,4 +102,4 @@ adpath "$HOME/.local/bin"
 if [ -z "$TMUX" ]; then
 	command -v tmux &>/dev/null && stmux
 fi
-unset stmux adpath
+unset adpath
