@@ -70,10 +70,13 @@ stmux() {
 	read -s ans && tput clear
 	if [ x"$ans" == xd ]; then
 		: # use the terminal
+	elif [ x"$ans" == x ]; then
+		tmux new-session
 	elif [ x"$ans" == xf ]; then
 		if [ -d "$projs" ]; then
 			targt="$(ls "$projs" | fzf --preview="ls -F '$projs/{}'")"
 			if [ -n "$targt" ]; then
+				targt="$(echo "$targt" | tr _ '\034' | tr . _)"
 				if tmux has-session -t "$targt" &>/dev/null; then
 					printf 'a session named %s already exist\n' "$targt"
 				elif [ -d "$projs/$targt" ]; then
@@ -81,10 +84,8 @@ stmux() {
 				fi
 			fi
 		fi
-	elif [ x"$ans" == x ]; then
-		tmux new-session
 	elif echo "$ans" | grep -q '^[0-9]\+$'; then
-		if [ $ans -ge 1 ] && [ $ans -le $numb ]; then
+		if (( ans >= 1 && ans <= numb )); then
 			targt="$(tmux list-sessions -F'#S' | sed -n "${ans}p")"
 			tmux attach -t "$targt"
 		fi
