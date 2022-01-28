@@ -15,7 +15,7 @@ set incsearch
 set ruler
 
 set autoindent
-set tabstop=4
+set tabstop=3
 "set smartindent
 
 " mappings in the insert mode

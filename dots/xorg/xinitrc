@@ -14,8 +14,8 @@ if test "x$XDG_CONFIG_HOME" = "x"; then
 	mkdir -p $XDG_CONFIG_HOME
 fi
 
-# XDG_CACHE_HOME defines the directory relative to which
-# user non-essential files are stored, so set if empty
+# XDG_CACHE_HOME defines the directory relative to which
+# user non-essential files are stored, so set if empty.
 if test "x$XDG_CACHE_HOME" = "x"; then
 	XDG_CACHE_HOME="$HOME/.cache"
 	export XDG_CACHE_HOME
@@ -30,24 +30,24 @@ XDG_MUSIC_DIR="$HOME/Music" && export XDG_MUSIC_DIR
 XDG_PICTURES_DIR="$HOME/Pictures" && export XDG_PICTURES_DIR
 XDG_VIDEOS_DIR="$HOME/Videos" && export XDG_VIDEOS_DIR
 
-# load all possible xresources configuration
+# load all possible xresources configurations
 xresources=''
 test -r "$HOME/.Xresources" && xresources="$HOME/.Xresources"
-test -r "$HOME/.Xdefaults" && xresources=" $xresources $HOME/.Xdefaults"
+test -r "$HOME/.Xdefaults" && xresources="$xresources $HOME/.Xdefaults"
 cat /dev/null $xresources | xrdb -merge -
 
 # set keyboard layouts
-command -v setxkbmap && setxkbmap -layout fr &
+command -v setxkbmap >/dev/null && setxkbmap -layout fr &
 
-# xcompmgr
-if command -v xcompmgr; then
-	pgrep xcompmgr || xcompmgr &
+# xcompmgr compositor
+if command -v xcompmgr >/dev/null; then
+	pgrep -x xcompmgr || xcompmgr -l 0.2 -t 0.2 -r 1.7 -I 0.2 -O 0.2 -D 30 -c -C -f &
 fi
 
 # setting WM_NAME X11 property of the root window (for status text in dwm).
 # you could still use autostart patch for dwm from suckless.org
-#command -V shslstatus && shslstatus &
+#command -v mileva && mileva -xsetroot
 command -v slstatus && slstatus &
 
-# start WM
+# start the window manager
 exec dwm

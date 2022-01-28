@@ -1,59 +1,27 @@
 #!/usr/bin/env sh
 
-## installation of language servers
-check () {
-	if ! command -V npm ; then
-		printf "npm package manager not installed"
-		return 1
-	fi
-}
-
-instals () {
+instals ()
+{
 	npm i -g \
-		# bash language server
 		bashls \
-		# html/css language server
 		vscode-langservers-extracted \
-		# python language server
 		pyright \
-		# golang language server
 		gopls \
-		# typescript language server
 		typescript typescript-language-server \
-	# installing clangd via packages manager
-	case "$(uname -a)" in
-		*[aA]rch*) pacman -Sy clangd ;;
-		*[Dd]ebian*) apt-get install clangd-12 ;;
-		*BSD*) : ;;
-		*) printf "Unkown operating system" 2>/dev/null
-	esac
+		clangd-12
 }
 
-## package installation
-bsds()
-{
-	# mpg123 sndio libshout openbsd-netcat
-	getbsdspackages=''
-	:
-}
+## netbsd packages
+cat <<-EOF
+EOF
 
-debian()
-{
-	getdebpackages='
-		luarocks npm dictd dict info
-	'
-	# wayland-protocols libwlroots6 libgles2-mesa-dev libwlroots-dev libinput-dev
-	apt-get upgrade && apt-get install "$getdebpackages"
-}
-
-archlinux()
-{
-	getarchpackages='
+## archlinux packages
+cat <<-EOF
 		usb_modeswitch vim sudo man
 		psutils xorg libglvnd xorg xorg-xinit
-		git tmux pulsemixer pulseaudio-alsa
+		git tmux pulsemixer pulseaudio-alsa pulseaudio-bluetooth
 		alsa-utils make gcc pkgconf wget w3m
-		lynx htop feh xcb neovim vis
+		lynx htop feh xcb neovim vis kismet
 		awk lua perl ffmpeg luarocks
 		npm scrot flameshot conky zathura bmon
 		zathura-pdf-mupdf zathura-cb zathura-ps
@@ -63,27 +31,22 @@ archlinux()
 		hashcat cowpatty reaver bully hcxpcapngtool
 		xclip texinfo python python-pip dictd
 		wpa_supplicant e2fsprogs gptfdisk youtube-dl
-		kakoune surfraw xautolock cups
-		gutenprint gnuplot lsof usbutils psmisc
+		kakoune kak-lsp surfraw xautolock cups
+		gutenprint gnuplot usbutils psmisc
 		hdparm dosfstools parted
 		lsof fzf telegram-desktop sysstat 
 		libvirt vagrant qemu dnsmasq ebtables
-		xcompmgr
-		cronie
-	'
-	pacman -ySu && pacman --no-confirm -S "$getarchpackages"
-}
+		xcompmgr cronie imagemagick imagemagick-doc
+		texlive-bin hostapd dash tcpdump openbsd-netcat
+		pdnsd nmap socat vulscan ufw tcpflow ipcalc sipcalc
+		tcpreplay lshw procps-ng bc xinetd
+EOF
 
-case "$(uname -a)" in
-	*[Dd]ebian*) debian;;
-	*[a|A]rch*) archlinux ;;
-	*[bB][sS][dD]*) bsds ;;
-	*) printf "Unknown operating system" >&2 ;;
-esac
-
-## auto configuration
-# no sanity check, I assume all the files are
-# there, so be sure to run it in the right place
+## debian package name
+cat <<-EOF
+	luarocks npm dictd dict info
+	# wayland-protocols libwlroots6 libgles2-mesa-dev libwlroots-dev libinput-dev
+EOF
 
 
 if test -z "$XDG_CONFIG_HOME"; then
@@ -96,7 +59,8 @@ if test "$(basename "$PWD")" != simpledots; then
 fi
 
 lbin="$HOME/.local/bin" && mkdir -p "$lbin"
-confcopy() {
+confcopy ()
+{
 	if test $# -ne 2; then
 		echo invalid number of arguments >&2
 		return 1
@@ -104,7 +68,6 @@ confcopy() {
 	local source="$1"
 	local destinat="$2"
 	test -e "$source" && cp -rv "$source" "$destinat" || return 1
-	return 0
 }
 
 confcopy "./tmux/tmux.conf" "$HOME/.tmux.conf"

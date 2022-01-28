@@ -5,12 +5,15 @@
 ####################
 ### aliases
 ####################
-alias ett='/tmp/test.sh'
 alias ll='ls --color=auto -lA'
 alias ls='ls --color=auto'
 alias grep='grep --color=auto'
 alias fgrep='fgrep --color=auto'
 alias egrep='egrep --color=auto'
+alias et='[ -x /tmp/test ] && /tmp/test'
+
+alias mkft='func_makefast'
+alias got='func_goto'
 
 ####################
 ### envar def
@@ -23,84 +26,47 @@ HISTSIZE=1000000
 HISTFILESIZE=10000000
 EDITOR="${EDITOR:-/bin/vim}"
 
+####################
+### shell options
+####################
 shopt -s checkwinsize
 
 ####################
 ### functions
 ####################
-makeft() {
-	local intr=sh
-	local tmpf=/tmp/test
 
-	[ $# -eq 1 ] && intr="$1"
-	truncate -s0 $tmpf && chmod u+x $tmpf
-	printf '#!/usr/bin/env %s' "$intr" > $tmpf
-	eval $EDITOR $tmpf
-}
-
-adpath() {
+func_apath ()
+{
 	local nwpath="$1"
 
-	if echo "$PATH" | grep -v ":\?${nwpath%%/}/\?\(:\|$\)"; then
+	if printf '%s' "$PATH" | grep -v ":\?${nwpath%%/}/\?\(:\|$\)"; then
 		PATH="${PATH:+$PATH:}$nwpath" && export PATH
 	fi
 }
 
-got() {
-	local comd="$(history | sed -n 's/^ *[0-9]\+ \+\(.*\)$/\1/p' | \
-			grep 'cd \+[/~]' | sort -u | fzf --layout=reverse)"
-	eval $comd
+func_makefast ()
+{
+	local shel tmp=/tmp/test
+
+	test $# -eq 0 && return 1
+
+	truncate -s0 $tmp && chmod u+x $tmp
+	printf '#!/bin/%s' "$@" > $tmp
+	eval ${EDITOR:-vim} $tmp
 }
 
-stmux() {
-	local projs="$HOME/projects"
-	local i=1 numb=0 targt=0
-
-	if tmux list-sessions &>/dev/null; then
-		numb=$(tmux list-sessions | wc -l)
-		printf 'choose a session to attach\n\n'
-		tmux list-sessions | while read line; do
-			printf '%s) %s\n' $i "$line"
-			((i++))
-		done
-	fi
-	printf '\nenter the name of your new tmux session or\n'
-	printf 'type %s<Enter> to fuzzy select your projects\n' 'f'
-	printf 'type %s<Enter> to avoid tmux\n' 'd'
-	read -s ans && tput clear
-	if [ x"$ans" == xd ]; then
-		: # use the terminal
-	elif [ x"$ans" == x ]; then
-		tmux new-session
-	elif [ x"$ans" == xf ]; then
-		if [ -d "$projs" ]; then
-			targt="$(ls "$projs" | fzf --preview="ls -F '$projs/{}'")"
-			if [ -n "$targt" ]; then
-				targt="$(echo "$targt" | tr _ '\034' | tr . _)"
-				if tmux has-session -t "$targt" &>/dev/null; then
-					printf 'a session named %s already exist\n' "$targt"
-				elif [ -d "$projs/$targt" ]; then
-					tmux new-session -s "$targt"
-				fi
-			fi
-		fi
-	elif echo "$ans" | grep -q '^[0-9]\+$'; then
-		if (( ans >= 1 && ans <= numb )); then
-			targt="$(tmux list-sessions -F'#S' | sed -n "${ans}p")"
-			tmux attach -t "$targt"
-		fi
-	else
-		tmux new-session -s "$ans"
-	fi
+func_goto ()
+{
+	command -v fzf &>/dev/null || return 1
+	eval `history | sed -n 's/^ *[0-9]\+ \+\(.*\)$/\1/p' | grep "^ *cd \+\([/~]\(\w*[/\(\\ \)]*\)*\|'/.\+'\) *$" | sort -u | fzf --layout=reverse`
 }
 
 ####################
 ### function call
 ####################
-## add local bin to PATH var
-adpath "$HOME/.local/bin"
+## append ~/.local/bin to PATH
+func_apath "$HOME/.local/bin"
 ## use tmux on every terminal
-if [ -z "$TMUX" ]; then
-	command -v tmux &>/dev/null && stmux
+if command -v wfmux >/dev/null; then
+	test -z "$TMUX" && wfmux -f
 fi
-unset adpath

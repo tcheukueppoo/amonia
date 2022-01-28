@@ -1,49 +1,48 @@
-#!/usr/bin/env sh
+#!/bin/sh
+#
+# See License file for copyright and license details.
 
-# set background image
-backimg() {
+func_set_wallpaper ()
+{
 	test -x "$HOME/.fehbg" && . "$HOME/.fehbg"
 }
 
-# starting conky
-conk() {
-	conkf="$HOME/.config/conky"
-	if [ -d "$conkf" ]; then
-		for i in "$conkf"; do
-			test -f "$i" && conky -c "$i"
+func_set_outputs ()
+{
+	display=
+	pdisplay=
+	outputs=$( xrandr --listmonitors | tail -n +2 | awk -F[' *'] '{print $4}' | tr '\n' ':' )
+
+	test -z "$outputs" && return
+	pdisplay="${outputs%%:*}"
+	xrandr --output "$pdisplay" --auto --rotate normal
+	xrandr --output "$pdisplay" --brightness 0.85
+	outputs="${outputs#*:}"
+	if test -n "$outputs"; then
+		IFS=$':'
+		for display in $outputs; do
+			xrandr --output "$display" --auto --rotate normal --right-of "$pdisplay"
+			xrandr --output "$display" --brightness 0.85
+			pdisplay="$display"
 		done
 	fi
 }
 
-# setting monitor(s)
-output() {
-	local outputs="$(xrandr --query | fgrep ' connected ' | \
-		sed -nE 's/([-[:alnum:]]+).*/\1/p')"
-	local nout=$(echo "$outputs" | wc -l)
-	
-	# only change gamma if there's only one monitor
-	if [ $nout -eq 1 ]; then
-		xrandr --output "$outputs" --brightness 0.6
-		return
-	fi
-	local out
-	local prev
-	local cont=true
-	echo "$outputs" | \
-	while read out; do
-		if [ $cont = false ]; then
-			xrandr --output $out --auto --rotate normal \
-				--right-of $prev
-		else
-			xrandr --output $out --auto --rotate normal
-			cont=false
-		fi
-		prev="$out"
+func_run_conky ()
+{
+	conk_theme=
+	conkfigs="$HOME/.config/conky"
+
+	for conk_theme in "$conkfigs"; do
+		test -f "$conk_theme" && conky -c "$conk_theme"
 	done
-	# set brightness
-	# command -v xbacklight && xbacklight -set 40
 }
 
-output &
-conk &
-backimg &
+# The order is significant and the success of one function
+# may depend its previous one, so No Need to put them in
+# backgroud else it may have some annoying visual effects.
+{
+	func_set_outputs
+	func_set_wallpaper
+	func_run_conky
+}
