@@ -15,15 +15,15 @@ set incsearch
 set ruler
 
 set autoindent
-set tabstop=3
+set tabstop=2
 "set smartindent
 
 " mappings in the insert mode
-inoremap ( ()
-inoremap " ""
-inoremap ' ''
-inoremap [ []
-inoremap { {}
+"inoremap ( ()
+"inoremap " ""
+"inoremap ' ''
+"inoremap [ []
+"inoremap { {}
 
 " highlight groups
 hi LineNr ctermfg=White ctermbg=NONE

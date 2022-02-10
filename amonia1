@@ -24,10 +24,10 @@ cat <<-EOF
 		lynx htop feh xcb neovim vis kismet
 		awk lua perl ffmpeg luarocks
 		npm scrot flameshot conky zathura bmon
-		zathura-pdf-mupdf zathura-cb zathura-ps
+		zathura-pdf-mupdf zathura-cb zathura-ps xchm
 		telegram-desktop bluez bluez-utils openssh dhcp
 		wireshark-cli dhclient acpi ntfs-3g
-		wifite macchanger iwd libxss pandoc nc
+		wifite macchanger iwd libxss pandoc texlive-bin texlive-core
 		hashcat cowpatty reaver bully hcxpcapngtool
 		xclip texinfo python python-pip dictd
 		wpa_supplicant e2fsprogs gptfdisk youtube-dl
@@ -39,7 +39,14 @@ cat <<-EOF
 		xcompmgr cronie imagemagick imagemagick-doc
 		texlive-bin hostapd dash tcpdump openbsd-netcat
 		pdnsd nmap socat vulscan ufw tcpflow ipcalc sipcalc
-		tcpreplay lshw procps-ng bc xinetd
+		tcpreplay lshw procps-ng bc xinetd partclone ddrescue
+		xdg-utils whois bspwm sxhkd xdo urxvt-unicode
+
+		base-devel
+		## nxyt: enchant, webkit2gtk, gobject-introspection
+		## build-time dependency: sbcl, cl-asdf
+
+		aws-cli atomicparsley docker-scan
 EOF
 
 ## debian package name

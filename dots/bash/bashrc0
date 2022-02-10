@@ -37,22 +37,18 @@ shopt -s checkwinsize
 
 func_apath ()
 {
-	local nwpath="$1"
-
-	if printf '%s' "$PATH" | grep -v ":\?${nwpath%%/}/\?\(:\|$\)"; then
-		PATH="${PATH:+$PATH:}$nwpath" && export PATH
+	if printf '%s' "$PATH" | grep -v ":\?${1%%/}/\?\(:\|$\)"; then
+		PATH="${PATH:+$PATH:}$1" && export PATH
 	fi
 }
 
 func_makefast ()
 {
-	local shel tmp=/tmp/test
-
 	test $# -eq 0 && return 1
-
+	tmp="/tmp/test.$1"
 	truncate -s0 $tmp && chmod u+x $tmp
 	printf '#!/bin/%s' "$@" > $tmp
-	eval ${EDITOR:-vim} $tmp
+	${EDITOR:-vim} $tmp
 }
 
 func_goto ()
@@ -61,12 +57,19 @@ func_goto ()
 	eval `history | sed -n 's/^ *[0-9]\+ \+\(.*\)$/\1/p' | grep "^ *cd \+\([/~]\(\w*[/\(\\ \)]*\)*\|'/.\+'\) *$" | sort -u | fzf --layout=reverse`
 }
 
-####################
 ### function call
 ####################
+
 ## append ~/.local/bin to PATH
 func_apath "$HOME/.local/bin"
+
 ## use tmux on every terminal
-if command -v wfmux >/dev/null; then
-	test -z "$TMUX" && wfmux -f
-fi
+command -v wfmux >/dev/null && test -z "$TMUX" && wfmux -f
+
+## NNN's env variables
+# Colorscheme
+BLK="04" CHR="04" DIR="04" EXE="00" REG="00" HARDLINK="00" SYMLINK="06" MISSING="00" ORPHAN="01" FIFO="0F" SOCK="0F" OTHER="02"
+export NNN_FCOLORS="$BLK$CHR$DIR$EXE$REG$HARDLINK$SYMLINK$MISSING$ORPHAN$FIFO$SOCK$OTHER"
+# Unique color for each context
+# 0-black, 1-red, 2-green, 3-yellow, 4-blue (default), 5-magenta, 6-cyan, 7-white
+export NNN_COLORS='4321'

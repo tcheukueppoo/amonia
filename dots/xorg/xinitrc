@@ -1,4 +1,4 @@
-#!/usr/bin/env sh
+#!/bin/sh
 
 # set the desktop session to determine if dwm is running
 if test "x$DESKTOP_SESSION" = "x"; then
@@ -6,7 +6,7 @@ if test "x$DESKTOP_SESSION" = "x"; then
 	export DESKTOP_SESSION
 fi
 
-# XDG_CONFIG_HOME defines the directory relative to which
+# XDG_CONFIG_HOME defines the directory relative to which
 # user specific configuration should be store, so set it if empty
 if test "x$XDG_CONFIG_HOME" = "x"; then
 	XDG_CONFIG_HOME="$HOME/.config"
@@ -36,18 +36,14 @@ test -r "$HOME/.Xresources" && xresources="$HOME/.Xresources"
 test -r "$HOME/.Xdefaults" && xresources="$xresources $HOME/.Xdefaults"
 cat /dev/null $xresources | xrdb -merge -
 
-# set keyboard layouts
+# set keyboard layout to fr
 command -v setxkbmap >/dev/null && setxkbmap -layout fr &
-
 # xcompmgr compositor
-if command -v xcompmgr >/dev/null; then
-	pgrep -x xcompmgr || xcompmgr -l 0.2 -t 0.2 -r 1.7 -I 0.2 -O 0.2 -D 30 -c -C -f &
-fi
+#command -v xcompmgr >/dev/null && xcompmgr -l 0.2 -t 0.2 -r 1.7 -I 0.2 -O 0.2 -D 30 -c -C -f &
+command -v picom >/dev/null && picom &
 
-# setting WM_NAME X11 property of the root window (for status text in dwm).
-# you could still use autostart patch for dwm from suckless.org
-#command -v mileva && mileva -xsetroot
-command -v slstatus && slstatus &
+# Set name of the root window with slstatus/mileva
+command -v slstatus >/dev/null && slstatus
 
 # start the window manager
 exec dwm
