@@ -22,7 +22,7 @@ set_outputs ()
 	xrandr --output "$pdisplay" --auto --rotate normal
 	xrandr --output "$pdisplay" --brightness 0.80
 	outputs="${outputs#*:}"
-	if test -n "$outputs"; then
+	if [ -n "$outputs" ]; then
 		IFS=$':'
 		for display in $outputs; do
 			xrandr --output "$display" --auto --rotate normal --right-of "$pdisplay"
@@ -32,3 +32,5 @@ set_outputs ()
 	fi
 }
 set_outputs &
+
+command -v xcape && xcape -e 'F1=Escape'

@@ -1,10 +1,7 @@
-#!/usr/bin/env sh
-#########################
+#!/usr/bin/env bash
 #### tcheukueppo's bashrc
 
-####################
 ### aliases
-####################
 alias ll='ls --color=auto -lA'
 alias ls='ls --color=auto'
 alias grep='grep --color=auto'
@@ -12,59 +9,78 @@ alias fgrep='fgrep --color=auto'
 alias egrep='egrep --color=auto'
 alias et='[ -x /tmp/test ] && /tmp/test'
 
-alias mkft='func_makefast'
-alias got='func_goto'
-
-####################
 ### envar def
-####################
 PS3='>>> '
 PS2='>> '
 PS1='\[\e[1;32m(\#\e[0m\]\[\e[1;34m,\e[0m\]\[\e[1;36m\j)\e[0m\] \u\[\e[1;35m@\e[0m\]\h \[\e[1;31m\W\e[0m\] $ '
+
 HISTCONTROL=ignoreboth
 HISTSIZE=1000000
 HISTFILESIZE=10000000
-EDITOR="${EDITOR:-/bin/vim}"
+EDITOR="${EDITOR:-/bin/nvim}"
 
-####################
+export HISTSIZE HISTCONTROL HISTFILESIZE EDITOR
+
 ### shell options
-####################
 shopt -s checkwinsize
 
-####################
-### functions
-####################
+### Map keyseq to the below shell functions
+bind -x '"\C-x":jmp'
+bind -x '"\C-k":mkf'
+bind -x '"\C-j":wfmux -f'
 
-func_apath ()
-{
-	if printf '%s' "$PATH" | grep -v ":\?${1%%/}/\?\(:\|$\)"; then
-		PATH="${PATH:+$PATH:}$1" && export PATH
+### functions
+apath() {
+	local npath="$1"
+	[[ "$PATH" =~ :{0,}${npath%%/}/?(:{1,}|$) ]] || export PATH="${PATH:+$PATH:}$npath"
+}
+
+mkf() {
+	if command -v fzf >/dev/null; then
+		local trash_dir="$HOME"
+
+		for i in {.local,bin,.trash}; do trash_dir+="/$i"; mkdir -p "$trash_dir"; done
+		if [[ -d "$trash_dir" ]]; then
+			local -A map=(
+				[sh]=sh     [pl]=perl
+				[p6]=raku   [js]=node
+				[bc]=bc     [lua]=lua
+				[bash]=bash [awk]=
+			)
+			local extension=$(for ext in "${!map[@]}"; do echo "$ext"; done | fzf --layout=reverse)
+
+			if [[ -n "$extension" ]]; then
+				local trash
+				local count=$(( $(ls $trash_dir/*.$extension 2>/dev/null | wc -l) + 1 ))
+
+				trash="$trash_dir/${count}trash.$extension"	
+				## awk doesn't support env since it requres '-f' to specify the source  file
+				shbang=`[[ "$extension" != "awk" ]] && echo "#!/usr/bin/env ${map[$extension]}" || echo "#!/usr/bin/awk -f"`
+				echo "$shbang" > "$trash"
+				chmod u+x "$trash"
+				${EDITOR:-vis} "$trash"
+			fi
+		fi
 	fi
 }
 
-func_makefast ()
-{
-	test $# -eq 0 && return 1
-	tmp="/tmp/test.$1"
-	truncate -s0 $tmp && chmod u+x $tmp
-	printf '#!/bin/%s' "$@" > $tmp
-	${EDITOR:-vim} $tmp
+jmp() {
+	command -v fzf >/dev/null || return $?
+	local direc=$(  history  \
+									| sed -n 's,^ \+[[:digit:]]\+ *cd \+\('\''/\([[:alnum:] ]\+/\?\)\+'\''\|/\([[:alnum:]\\ ]\+/\?\)\+\) *$,\1,p' \
+									| sort -u \
+									| fzf --layout=reverse
+							 )
+	[[ -n "$direc" ]] && eval "[[ -d $direc ]] && cd $direc"
 }
-
-func_goto ()
-{
-	command -v fzf &>/dev/null || return 1
-	eval `history | sed -n 's/^ *[0-9]\+ \+\(.*\)$/\1/p' | grep "^ *cd \+\([/~]\(\w*[/\(\\ \)]*\)*\|'/.\+'\) *$" | sort -u | fzf --layout=reverse`
-}
-
-### function call
-####################
 
 ## append ~/.local/bin to PATH
-func_apath "$HOME/.local/bin"
-
-## use tmux on every terminal
-command -v wfmux >/dev/null && test -z "$TMUX" && wfmux -f
+apath "$HOME/.local/bin"
+apath "$HOME/.raku/bin"
+apath "$HOME/node_modules/.bin"
+apath "/usr/share/perl6/site/bin"
+apath "/usr/share/perl6/vendor/bin"
+apath "/usr/share/perl6/core/bin"
 
 ## NNN's env variables
 # Colorscheme
@@ -73,3 +89,6 @@ export NNN_FCOLORS="$BLK$CHR$DIR$EXE$REG$HARDLINK$SYMLINK$MISSING$ORPHAN$FIFO$SO
 # Unique color for each context
 # 0-black, 1-red, 2-green, 3-yellow, 4-blue (default), 5-magenta, 6-cyan, 7-white
 export NNN_COLORS='4321'
+
+## use tmux on every terminal
+command -v wfmux >/dev/null && [[ -v "$TMUX" ]] && wfmux -f

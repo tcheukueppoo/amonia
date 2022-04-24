@@ -17,7 +17,7 @@ EOF
 
 ## archlinux packages
 cat <<-EOF
-		usb_modeswitch vim sudo man
+		usb_modeswitch sudo man
 		psutils xorg libglvnd xorg xorg-xinit
 		git tmux pulsemixer pulseaudio-alsa pulseaudio-bluetooth
 		alsa-utils make gcc pkgconf wget w3m
@@ -34,13 +34,14 @@ cat <<-EOF
 		kakoune kak-lsp surfraw xautolock cups
 		gutenprint gnuplot usbutils psmisc
 		hdparm dosfstools parted
-		lsof fzf telegram-desktop sysstat 
+		lsof fzf telegram-desktop sysstat tree
 		libvirt vagrant qemu dnsmasq ebtables
 		xcompmgr cronie imagemagick imagemagick-doc
 		texlive-bin hostapd dash tcpdump openbsd-netcat
 		pdnsd nmap socat vulscan ufw tcpflow ipcalc sipcalc
 		tcpreplay lshw procps-ng bc xinetd partclone ddrescue
-		xdg-utils whois bspwm sxhkd xdo urxvt-unicode
+		xdg-utils whois bspwm sxhkd xdo tree
+		xournalpp
 
 		base-devel
 		## nxyt: enchant, webkit2gtk, gobject-introspection
