@@ -32,7 +32,10 @@ bind -x '"\C-j":wfmux -f'
 ### functions
 apath() {
 	local npath="$1"
-	[[ "$PATH" =~ :{0,}${npath%%/}/?(:{1,}|$) ]] || export PATH="${PATH:+$PATH:}$npath"
+	[[ "$PATH" =~ :{0,}${npath%%/}/?(:{1,}|$) ]] || {
+		export PATH="${PATH:+$PATH:}$npath"
+		#echo "got $npath"
+	}
 }
 
 mkf() {
@@ -42,21 +45,21 @@ mkf() {
 		for i in {.local,bin,.trash}; do trash_dir+="/$i"; mkdir -p "$trash_dir"; done
 		if [[ -d "$trash_dir" ]]; then
 			local -A map=(
-				[sh]=sh     [pl]=perl
-				[p6]=raku   [js]=node
-				[bc]=bc     [lua]=lua
-				[bash]=bash [awk]=
+				[sh]="sh"     [pl]="perl"
+				[p6]="raku"   [js]="node"
+				[bc]="bc"     [lua]="lua"
+				[bash]="bash" [awk]=""
 			)
 			local extension=$(for ext in "${!map[@]}"; do echo "$ext"; done | fzf --layout=reverse)
 
 			if [[ -n "$extension" ]]; then
-				local trash
-				local count=$(( $(ls $trash_dir/*.$extension 2>/dev/null | wc -l) + 1 ))
+				local count=$(ls $trash_dir/*.$extension 2>/dev/null | wc -l)
+				local trash="$trash_dir/${count}trash.$extension"	
 
-				trash="$trash_dir/${count}trash.$extension"	
-				## awk doesn't support env since it requres '-f' to specify the source  file
-				shbang=`[[ "$extension" != "awk" ]] && echo "#!/usr/bin/env ${map[$extension]}" || echo "#!/usr/bin/awk -f"`
-				echo "$shbang" > "$trash"
+				[[ -f "$trash" && `cat $trash | wc -l` == "2" ]] || trash="$trash_dir/$((++count))trash.$extension"
+				## awk doesn't support 'env' since it requres '-f' to specify the source  file
+				shbang=$( [[ "$extension" != "awk" ]] && echo "#!/usr/bin/env ${map[$extension]}" || echo "#!/usr/bin/awk -f" )
+				printf "%s\n\n\n" "$shbang" > "$trash"
 				chmod u+x "$trash"
 				${EDITOR:-vis} "$trash"
 			fi
@@ -66,11 +69,12 @@ mkf() {
 
 jmp() {
 	command -v fzf >/dev/null || return $?
-	local direc=$(  history  \
-									| sed -n 's,^ \+[[:digit:]]\+ *cd \+\('\''/\([[:alnum:] ]\+/\?\)\+'\''\|/\([[:alnum:]\\ ]\+/\?\)\+\) *$,\1,p' \
-									| sort -u \
-									| fzf --layout=reverse
-							 )
+	local direc=$(
+		  history  \
+		| sed -n 's,^ \+[[:digit:]]\+ *cd \+\('\''/\([[:alnum:] ]\+/\?\)\+'\''\|~\?/\([[:alnum:]\\ ]\+/\?\)\+\) *$,\1,p' \
+		| sort -u \
+		| fzf --layout=reverse
+	)
 	[[ -n "$direc" ]] && eval "[[ -d $direc ]] && cd $direc"
 }
 
@@ -90,5 +94,5 @@ export NNN_FCOLORS="$BLK$CHR$DIR$EXE$REG$HARDLINK$SYMLINK$MISSING$ORPHAN$FIFO$SO
 # 0-black, 1-red, 2-green, 3-yellow, 4-blue (default), 5-magenta, 6-cyan, 7-white
 export NNN_COLORS='4321'
 
-## use tmux on every terminal
-command -v wfmux >/dev/null && [[ -v "$TMUX" ]] && wfmux -f
+## always use tmux
+command -v wfmux >/dev/null && { [[ -n "$TMUX" ]] || wfmux -f; }

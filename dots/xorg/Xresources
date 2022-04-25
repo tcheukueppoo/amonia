@@ -78,7 +78,7 @@ st.alpha:                  0.95
 st.font:                   FantasqueSansMono Nerd Font:pixelsize=16
 
 !! dwm
-dwm.topbar:                1
+dwm.topbar:                0
 !dwm.selbgcolor:
 !dwm.selfgcolor:
 !dwm.normbgcolor:
