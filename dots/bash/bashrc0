@@ -12,7 +12,7 @@ alias et='[ -x /tmp/test ] && /tmp/test'
 ### envar def
 PS3='>>> '
 PS2='>> '
-PS1='\[\e[1;32m(\#\e[0m\]\[\e[1;34m,\e[0m\]\[\e[1;36m\j)\e[0m\] \u\[\e[1;35m@\e[0m\]\h \[\e[1;31m\W\e[0m\] $ '
+#PS1='\u\[\e[1;35m@\e[0m\]\h \[\e[1;31m\W\e[0m\] \$ '
 
 HISTCONTROL=ignoreboth
 HISTSIZE=1000000
@@ -71,7 +71,7 @@ jmp() {
 	command -v fzf >/dev/null || return $?
 	local direc=$(
 		  history  \
-		| sed -n 's,^ \+[[:digit:]]\+ *cd \+\('\''/\([[:alnum:] ]\+/\?\)\+'\''\|~\?/\([[:alnum:]\\ ]\+/\?\)\+\) *$,\1,p' \
+		| sed -n 's,^ \+[[:digit:]]\+ *cd \+\('\''/\([-\.[:alnum:] ]\+/\?\)\+'\''\|~\?/\([-\.[:alnum:]\\ ]\+/\?\)\+\) *$,\1,p' \
 		| sort -u \
 		| fzf --layout=reverse
 	)
