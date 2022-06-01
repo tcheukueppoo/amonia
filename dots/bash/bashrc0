@@ -14,31 +14,48 @@ PS3='>>> '
 PS2='>> '
 #PS1='\u\[\e[1;35m@\e[0m\]\h \[\e[1;31m\W\e[0m\] \$ '
 
-HISTCONTROL=ignoreboth
-HISTSIZE=1000000
-HISTFILESIZE=10000000
-EDITOR="${EDITOR:-/bin/nvim}"
-
-export HISTSIZE HISTCONTROL HISTFILESIZE EDITOR
+export HISTCONTROL=ignoreboth
+export HISTSIZE=1000000
+export HISTFILESIZE=10000000
+export EDITOR="${EDITOR:-/bin/nvim}"
 
 ### shell options
 shopt -s checkwinsize
 
 ### Map keyseq to the below shell functions
-bind -x '"\C-x":jmp'
-bind -x '"\C-k":mkf'
+bind -x '"\C-x":__jump_to_dir'
+bind -x '"\C-k":__write_dirty_scripts'
+bind -x '"\C-l":__exec_latest'
 bind -x '"\C-j":wfmux -f'
 
 ### functions
-apath() {
-	local npath="$1"
-	[[ "$PATH" =~ :{0,}${npath%%/}/?(:{1,}|$) ]] || {
-		export PATH="${PATH:+$PATH:}$npath"
-		#echo "got $npath"
-	}
+__append_path() {
+
+	local new_path="$1"
+	[[ "$PATH" =~ :{0,}${new_path%%/}/?(:{1,}|$) ]] || export PATH="${PATH:+$PATH:}$new_path"
 }
 
-mkf() {
+__exec_latest() {
+
+	local trash_bin="$HOME/.local/bin/trash"
+	if [[ -d "$trash_dir" ]]; then
+		local stat since=-1
+
+		case `uname -a` in
+			(*Linux*) stat='stat --printf "%"' ;;
+			(*BSD*)   stat='stat -f "%"' ;;
+			(*)       stat='ls' ;;
+		esac
+		for trash in $trash_dir; do
+			time=$( $stat $trash )
+			((time > since)) && latest=$trash
+		done
+		. "$trash_dir/$trash"
+	fi
+}
+
+__write_dirty_scripts() {
+
 	if command -v fzf >/dev/null; then
 		local trash_dir="$HOME"
 
@@ -53,10 +70,11 @@ mkf() {
 			local extension=$(for ext in "${!map[@]}"; do echo "$ext"; done | fzf --layout=reverse)
 
 			if [[ -n "$extension" ]]; then
+				local shbang
 				local count=$(ls $trash_dir/*.$extension 2>/dev/null | wc -l)
-				local trash="$trash_dir/${count}trash.$extension"	
+				local trash="$trash_dir/${count}_trash.$extension"	
 
-				[[ -f "$trash" && `cat $trash | wc -l` == "2" ]] || trash="$trash_dir/$((++count))trash.$extension"
+				[[ -f "$trash" && `cat $trash | wc -l` == "2" ]] || trash="$trash_dir/$((++count))_trash.$extension"
 				## awk doesn't support 'env' since it requres '-f' to specify the source  file
 				shbang=$( [[ "$extension" != "awk" ]] && echo "#!/usr/bin/env ${map[$extension]}" || echo "#!/usr/bin/awk -f" )
 				printf "%s\n\n\n" "$shbang" > "$trash"
@@ -67,7 +85,8 @@ mkf() {
 	fi
 }
 
-jmp() {
+__jump_to_dir() {
+
 	command -v fzf >/dev/null || return $?
 	local direc=$(
 		  history  \
@@ -75,16 +94,17 @@ jmp() {
 		| sort -u \
 		| fzf --layout=reverse
 	)
+
 	[[ -n "$direc" ]] && eval "[[ -d $direc ]] && cd $direc"
 }
 
-## append ~/.local/bin to PATH
-apath "$HOME/.local/bin"
-apath "$HOME/.raku/bin"
-apath "$HOME/node_modules/.bin"
-apath "/usr/share/perl6/site/bin"
-apath "/usr/share/perl6/vendor/bin"
-apath "/usr/share/perl6/core/bin"
+__append_path "$HOME/.local/bin"
+__append_path "$HOME/.raku/bin"
+__append_path "$HOME/bin"
+__append_path "$HOME/node_modules/.bin"
+__append_path "/usr/share/perl6/site/bin"
+__append_path "/usr/share/perl6/vendor/bin"
+__append_path "/usr/share/perl6/core/bin"
 
 ## NNN's env variables
 # Colorscheme

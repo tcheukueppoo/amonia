@@ -1,0 +1,5 @@
+fontname "FantasqueSansMono Nerd Font:pixelsize=16"
+
+bind-key 4-Return st
+
+bind-key 4S-Left window-maximize
