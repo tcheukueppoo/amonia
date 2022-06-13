@@ -101,6 +101,7 @@ __jump_to_dir() {
 __append_path "$HOME/.local/bin"
 __append_path "$HOME/.raku/bin"
 __append_path "$HOME/bin"
+__append_path "$HOME/.gem/ruby/3.0.0/bin"
 __append_path "$HOME/node_modules/.bin"
 __append_path "/usr/share/perl6/site/bin"
 __append_path "/usr/share/perl6/vendor/bin"

@@ -1,6 +1,7 @@
 ---
   pacman:
-    pacman: pacman -Syu && pacman
+    os: archlinux
+    prerequisites: pacman -Syu
     init:
       - usb_modeswitch
       - sudo
@@ -126,34 +127,34 @@
       - yq
       - hq
     jekyll:
+      # all this nosense because of aur, damn it!!! you thought
+      # pacman couldn't install dependencies itself? :).
+      - jekyll_baseLang: ruby
       - ruby-irb
       - ruby-reline
       - rubygems
       - ruby
-      - ruby-addressable
-      - ruby-colorator
-      - ruby-em-websocket
-      - ruby-i18n
-      - ruby-jekyll-sass-converter
-      - ruby-jekyll-watch
-      - ruby-kramdown
-      - ruby-kramdown-parser-gfm
-      - ruby-liquid
-      - ruby-mercenary
-      - ruby-pathutil
-      - ruby-rouge
-      - ruby-safe_yaml
-      - ruby-terminal-table
-      - ruby-webrick
-      - ruby-jekyll-feed:      bool
-      - ruby-jekyll-gist:      bool
-      - ruby-jekyll-paginate:  bool
-      - ruby-minima:           bool
+      - rubygems: gem install '{}'
+        - jekyll
+        - bundler
+
     vuejs:
 
+    cro:
+
+    mojo:
+
+    
     django:
-      - python-pip
+      - python
       - sqlite
-      - pip:
+      - python-pip
+      - python-pip: pip install '{}'
         - django
+
+pkgsrc:
+  os: NetBSD
+
+pkg:
+  os: OpenBSD
 ...
