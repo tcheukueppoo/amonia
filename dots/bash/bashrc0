@@ -26,7 +26,7 @@ shopt -s checkwinsize
 bind -x '"\C-x":__jump_to_dir'
 bind -x '"\C-k":__write_dirty_scripts'
 bind -x '"\C-l":__exec_latest'
-bind -x '"\C-j":wfmux -f'
+bind -x '"\C-j":__wfmux'
 
 ### functions
 __append_path() {
@@ -36,7 +36,7 @@ __append_path() {
 }
 
 __exec_latest() {
-	local trash_dir="$HOME/.local/bin/trash"
+	local trash_dir="$HOME/.local/bin/.trash"
 
 	if [[ -d "$trash_dir" ]]; then
 		local latest_exec
@@ -47,7 +47,6 @@ __exec_latest() {
 }
 
 __write_dirty_scripts() {
-
 	command -v fzf >/dev/null || return $?
 
 	local trash_dir=$HOME
@@ -60,7 +59,7 @@ __write_dirty_scripts() {
 			[bc]="bc"     [lua]="lua"
 			[bash]="bash" [awk]=""
 		)
-		local extension=$(for ext in "${!map[@]}"; do printf '%s' "$ext"; done | fzf --layout=reverse)
+		local extension=$(for ext in "${!map[@]}"; do printf '%s\n' "$ext"; done | fzf --layout=reverse)
 
 		if [[ -n "$extension" ]]; then
 			local count=$(ls $trash_dir/*.$extension 2>/dev/null | wc -l)
@@ -76,24 +75,24 @@ __write_dirty_scripts() {
 }
 
 __jump_to_dir() {
-
 	command -v fzf >/dev/null || return $?
 
 	local direc=$(
-		history
-		| perl -ne 'print if s&^ *\d+ *cd (?|((:?~?/(:?[\w-]|[\\ ])*){1,}/?)|('\''(:?/(:?[\w- ]*))*/?'\'')$&$1&' \
-		| sort  \
-		| uniq  \
-		| fzf --layout=reverse
+	      history \
+		| perl -ne 'print if s&^ *\d+ *cd (?|((:?~?/(:?[\w-]|[\\ ])*){1,}/?)|('\''(:?/(:?[\w- ]*))*/?'\''))$&$1&' \
+	    | sort  \
+	    | uniq  \
+	    | fzf --layout=reverse
 	)
 
 	[[ -n "$direc" ]] && eval "[[ -d $direc ]] && cd $direc"
 }
 
+__wfmux() { wfmux -f; }
+
 __append_path "$HOME/.local/bin"
 __append_path "$HOME/.raku/bin"
 __append_path "$HOME/bin"
-__append_path "$HOME/.gem/ruby/3.0.0/bin"
 __append_path "$HOME/node_modules/.bin"
 __append_path "/usr/share/perl6/site/bin"
 __append_path "/usr/share/perl6/vendor/bin"

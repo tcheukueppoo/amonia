@@ -1,4 +1,0 @@
-MAILTO=kueppo
-
-# change wallpaper every 10
-* * * * *	chwal /mnt2/media/images

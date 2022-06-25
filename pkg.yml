@@ -8,8 +8,8 @@
       - man
       - psutils
       - xorg
-      - libglvnd
       - xorg-xinit
+      - libglvnd
       - git
       - tmux
       - pulsemixer
