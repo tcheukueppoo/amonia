@@ -7,7 +7,7 @@ alias ls='ls --color=auto'
 alias grep='grep --color=auto'
 alias fgrep='fgrep --color=auto'
 alias egrep='egrep --color=auto'
-alias et='[ -x /tmp/test ] && /tmp/test'
+alias cpanm='cpanm --local-lib=~/perl5'
 
 ### envar def
 PS3='>>> '
@@ -30,57 +30,47 @@ bind -x '"\C-j":wfmux -f'
 
 ### functions
 __append_path() {
-
 	local new_path="$1"
-	[[ "$PATH" =~ :{0,}${new_path%%/}/?(:{1,}|$) ]] || export PATH="${PATH:+$PATH:}$new_path"
+
+	[[ -d "$new_path" || -x "$new_path" ]] && { [[ "$PATH" =~ :{0,}${new_path%%/}/?(:{1,}|$) ]] || export PATH="${PATH:+$PATH:}$new_path"; }
 }
 
 __exec_latest() {
+	local trash_dir="$HOME/.local/bin/trash"
 
-	local trash_bin="$HOME/.local/bin/trash"
 	if [[ -d "$trash_dir" ]]; then
-		local stat since=-1
+		local latest_exec
 
-		case `uname -a` in
-			(*Linux*) stat='stat --printf "%"' ;;
-			(*BSD*)   stat='stat -f "%"' ;;
-			(*)       stat='ls' ;;
-		esac
-		for trash in $trash_dir; do
-			time=$( $stat $trash )
-			((time > since)) && latest=$trash
-		done
-		. "$trash_dir/$trash"
+		latest_exec=$(ls -t "$trash_dir" | head -n1)
+		eval "$trash_dir/$latest_exec"
 	fi
 }
 
 __write_dirty_scripts() {
 
-	if command -v fzf >/dev/null; then
-		local trash_dir="$HOME"
+	command -v fzf >/dev/null || return $?
 
-		for i in {.local,bin,.trash}; do trash_dir+="/$i"; mkdir -p "$trash_dir"; done
-		if [[ -d "$trash_dir" ]]; then
-			local -A map=(
-				[sh]="sh"     [pl]="perl"
-				[p6]="raku"   [js]="node"
-				[bc]="bc"     [lua]="lua"
-				[bash]="bash" [awk]=""
-			)
-			local extension=$(for ext in "${!map[@]}"; do echo "$ext"; done | fzf --layout=reverse)
+	local trash_dir=$HOME
 
-			if [[ -n "$extension" ]]; then
-				local shbang
-				local count=$(ls $trash_dir/*.$extension 2>/dev/null | wc -l)
-				local trash="$trash_dir/${count}_trash.$extension"	
+	for i in {.local,bin,.trash}; do trash_dir+="/$i"; mkdir -p "$trash_dir"; done
+	if [[ -d "$trash_dir" ]]; then
+		local -A map=(
+			[sh]="sh"     [pl]="perl"
+			[p6]="raku"   [js]="node"
+			[bc]="bc"     [lua]="lua"
+			[bash]="bash" [awk]=""
+		)
+		local extension=$(for ext in "${!map[@]}"; do printf '%s' "$ext"; done | fzf --layout=reverse)
 
-				[[ -f "$trash" && `cat $trash | wc -l` == "2" ]] || trash="$trash_dir/$((++count))_trash.$extension"
-				## awk doesn't support 'env' since it requres '-f' to specify the source  file
-				shbang=$( [[ "$extension" != "awk" ]] && echo "#!/usr/bin/env ${map[$extension]}" || echo "#!/usr/bin/awk -f" )
-				printf "%s\n\n\n" "$shbang" > "$trash"
-				chmod u+x "$trash"
-				${EDITOR:-vis} "$trash"
-			fi
+		if [[ -n "$extension" ]]; then
+			local count=$(ls $trash_dir/*.$extension 2>/dev/null | wc -l)
+			local trash="$trash_dir/${count}_trash.$extension"	
+
+			[[ -f "$trash" && `cat $trash | wc -l` == "2" ]] || trash="$trash_dir/$((++count))_trash.$extension"
+			## awk doesn't support 'env' since it requres '-f' to specify the source  file
+			printf '%s\n\n' "$( [[ "$extension" != "awk" ]] && printf '#!/usr/bin/env %s' "${map[$extension]}" || printf '#!/usr/bin/awk -f' )" >"$trash"
+			chmod u+x "$trash"
+			${EDITOR:-vis} "$trash"
 		fi
 	fi
 }
@@ -88,10 +78,12 @@ __write_dirty_scripts() {
 __jump_to_dir() {
 
 	command -v fzf >/dev/null || return $?
+
 	local direc=$(
-		  history  \
-		| sed -n 's,^ \+[[:digit:]]\+ *cd \+\('\''/\([-\.[:alnum:] ]\+/\?\)\+'\''\|~\?/\([-\.[:alnum:]\\ ]\+/\?\)\+\) *$,\1,p' \
-		| sort -u \
+		history
+		| perl -ne 'print if s&^ *\d+ *cd (?|((:?~?/(:?[\w-]|[\\ ])*){1,}/?)|('\''(:?/(:?[\w- ]*))*/?'\'')$&$1&' \
+		| sort  \
+		| uniq  \
 		| fzf --layout=reverse
 	)
 
@@ -106,6 +98,7 @@ __append_path "$HOME/node_modules/.bin"
 __append_path "/usr/share/perl6/site/bin"
 __append_path "/usr/share/perl6/vendor/bin"
 __append_path "/usr/share/perl6/core/bin"
+__append_path "/var/lib/snapd/snap/bin"
 
 ## NNN's env variables
 # Colorscheme
