@@ -1,3 +1,46 @@
 #!/usr/bin/env sh
 
+## git repos:
+##  kfetch:   https://codeberg.org/tcheukueppo/kfetch
+##  ktoolbox: https://codeberg.org/tcheukueppo/ktoolbox
+##  me:       https://codeberg.org/tcheukueppo/amonia
 
+
+## 1. Check Os type to determine package manager
+## 2. Install the needed applications to run this script
+## 3. 
+
+readonly rgit="codeberg.org github.com gitlab.com"
+
+## softwares
+readonly suckl=$(cat <<EOF
+/sad
+/kst
+/kdwm
+/ksent
+/kdmenu
+/kslock
+/kslstatus
+/kfetch
+/ktoolbox
+/wfmux
+EOF
+)
+
+readonly home_configs=$(cat <<EOF
+bash
+dict
+grub
+picom
+tmux
+vim
+wayland
+xorg
+EOF
+)
+
+readonly on_config_dir=$(cat <<EOF
+conky
+zathura
+EOF
+)
