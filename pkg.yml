@@ -127,6 +127,8 @@ pacman:
     - qemu
     - docker
     - aws-cli
+    # needed to build and run custom applications (suckless softwares, wfmux, sad, etc)
+    - sndio
 
 pkgsrc:
   cmd:

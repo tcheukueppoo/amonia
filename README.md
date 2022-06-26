@@ -1,29 +1,35 @@
 # AMONIA
 
-Amonia an sh toxic script which aims to setup a developement
+Amonia a toxic sh script which aims to setup a developement
 environment for most of the programming langauges and technologies,
-install and configure minimal tools, and applications.
+install and configure minimal tools and applications.
 
 **Supported operating systems**
 OpenBSD, NetBSD, FreeBSD, ArchLinux(+ it derivatives),
-Debian(+ it derivatives), NixOS, and Alpine.
+Debian(+ it derivatives).
 
-## Command list mininal applications
+## What are the installed packages?
 
-git, fzy, tmux, dict, scrot, ffmpeg,
-fswebcam, paranoid, pandoc, cups,
-gnuplot, vis, vim, nvim, kak, sfm, 
+Check pkg.yml.
 
+NB: This is more of a personal setup cause what I use isn't exactly what you do
+and that's not even all, it also git clone some of my software I use and setup them
+automatically
 
-## List of pragramming languages
+## How does it work?
 
-c, c++, sh/bash, perl, golang, raku,
-javascript, typescript, lua and python.
+**Prequisites**: install curl/wget/pget/aria2
 
-## Gui applications
+For on the fly setup on your freshly installed OS(see supported os above), run
 
-dwm, dwl, dmenu, wayst, st, sent, slock, sad, 
-conky, telegram desktop, surf, firefox, flameshot,
-vimb, luakit, krita, gimp, and 
+```bash
+curl 'https://...' | sh
+```
 
-## 
+or run this instead if you want to avoid installation of my projects
+
+```bash
+curl -o setup.sh 'https://...' && 
+```
+
+One cool thing about amonia is that we just the above command 
