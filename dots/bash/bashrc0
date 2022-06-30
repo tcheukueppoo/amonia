@@ -28,6 +28,8 @@ bind -x '"\C-k":__write_dirty_scripts'
 bind -x '"\C-l":__exec_latest'
 bind -x '"\C-j":__wfmux'
 
+ms() { eval "module-starter --$1 --builder='$2' --author='Kueppo Tcheukam' --email='tcheukueppo@cpan.org' --license=gpl3"; }
+
 ### functions
 __append_path() {
 	local new_path="$1"
