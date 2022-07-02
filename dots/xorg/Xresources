@@ -3,8 +3,8 @@
 *foreground:               #000000
 *.foreground:              #000000
 
-*background:               #dedede
-*.background:              #dedede
+*background:               #d3d8ed
+*.background:              #d3d8ed
 
 ! black
 *.color0:                  #dedede
