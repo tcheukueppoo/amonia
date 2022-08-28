@@ -27,6 +27,7 @@ pacman:
     - bc
     - sed
     - grep
+    - ack
     - perl
     - nawk
     - tree
@@ -81,7 +82,7 @@ pacman:
     - tmux
     - vim
     - xclip
-    - neovim
+    - vim
     - texlive-bin
     - texlive-core
     - pandoc
@@ -91,7 +92,6 @@ pacman:
     - gnuplot
     - cups
     - jq
-    - hq
     - yq
     - dictd
     - usbutils
@@ -119,8 +119,9 @@ pacman:
     - zathura-ps
     - xchm
     - conky
+    - nyxt
+    #- firefox
     - xournalpp
-    - firefox
     # virtualization and deployment softwares
     - libvirt
     - vagrant
