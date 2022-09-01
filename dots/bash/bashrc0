@@ -28,8 +28,18 @@ bind -x '"\C-k":__write_dirty_scripts'
 bind -x '"\C-l":__exec_latest'
 bind -x '"\C-j":__wfmux'
 
+## source completion programs to enable programable completion
+if [[ -d "/usr/share/bash-completion/completions/" ]]; then
+	{ for cmp in /usr/share/bash-completion/completions/*; do
+	    source "$cmp"
+	  done
+	} 2>/dev/null
+fi
+
 # wrapper to module-starter
-ms() { [[ $# -eq 2 ]] && module-starter --module="$1" --$2 --email="tcheukueppo@gmail.com" --license=gpl3 --author="Kueppo Tcheukam"; }
+ms() {
+	[[ $# -eq 2 ]] && module-starter --module="$1" --$2 --email="tcheukueppo@gmail.com" --license=gpl3 --author="Kueppo Tcheukam"
+}
 
 ### functions
 __append_path() {
