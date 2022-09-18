@@ -26,7 +26,7 @@ shopt -s checkwinsize
 bind -x '"\C-x":__jump_to_dir'
 bind -x '"\C-k":__write_dirty_scripts'
 bind -x '"\C-l":__exec_latest'
-bind -x '"\C-j":__wfmux'
+bind -x '"\C-y":printf "$READLINE_LINE" | xclip -in -selection clip'
 
 ## source completion programs to enable programable completion
 if [[ -d "/usr/share/bash-completion/completions/" ]]; then
