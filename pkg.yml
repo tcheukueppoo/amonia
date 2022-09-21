@@ -4,8 +4,19 @@ pacman:
   pkgs:
     # Default applications
     - ebtables
-    - xorg
-    - xorg-xinit
+    xorg:
+      - xorg
+      - xorg-xinit
+      - xclip
+    wayland:
+      - wayland
+      - sway
+      - swayidle
+      - wofi
+      - swaybg
+      - foot
+      - swaylock
+      - wl-clipboard
     - sudo
     - man
     - texinfo
@@ -80,8 +91,6 @@ pacman:
     - entr
     - fzf
     - tmux
-    - vim
-    - xclip
     - vim
     - texlive-bin
     - texlive-core
