@@ -38,12 +38,10 @@ cat /dev/null $xresources | xrdb -merge -
 
 # set keyboard layout to fr
 command -v setxkbmap >/dev/null && setxkbmap -layout fr &
+
 # xcompmgr compositor
 #command -v xcompmgr >/dev/null && xcompmgr -l 0.2 -t 0.2 -r 1.7 -I 0.2 -O 0.2 -D 30 -c -C -f &
 command -v picom >/dev/null && picom &
 
-# Set name of the root window with slstatus/mileva
-command -v slstatus >/dev/null && slstatus
-
 # start the window manager
-exec dwm
+exec i3

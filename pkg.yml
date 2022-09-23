@@ -8,6 +8,10 @@ pacman:
       - xorg
       - xorg-xinit
       - xclip
+      - i3-gaps
+      - i3lock
+      - xss-lock
+      - dex
     wayland:
       - wayland
       - sway

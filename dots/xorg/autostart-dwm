@@ -3,31 +3,34 @@
 set_wallpaper() {
 	[ -x "$HOME/.fehbg" ] && . "$HOME/.fehbg"
 }
-set_wallpaper &
 
 # set outputs X1, X2, ...., Xn where Xn is right of Xn-1
 set_outputs() {
-	display=
-	pdisplay=
-	outputs=$(xrandr --listmonitors | tail -n +2 | awk -F[' *'] '{print $4}' | tr '\n' ':')
+	local outputs=$(xrandr --listmonitors | tail -n +2 | awk -F[' *'] '{print $4}' | tr '\n' ':')
+	[ -n "$outputs" ] || return
 
-	test -n "$outputs" || return
-	pdisplay="${outputs%%:*}"
+	local pdisplay=${outputs%%:*}
 	xrandr --output "$pdisplay" --auto --rotate normal
 	xrandr --output "$pdisplay" --brightness 0.80
-	outputs="${outputs#*:}"
-	if test -n "$outputs"; then
+
+	outputs=${outputs#*:}
+	if [ -n "$outputs" ]
+	then
 		IFS=$':'
-		for display in $outputs; do
+		for display in $outputs
+		do
 			xrandr --output "$display" --auto --rotate normal --right-of "$pdisplay"
 			xrandr --output "$display" --brightness 0.80
-			pdisplay="$display"
+			pdisplay=$display
 		done
 	fi
 }
-set_outputs &
 
 change_key() {
 	command -v xcape && xcape -e 'F1=Escape'
 }
-change_key &
+
+{ change_key
+  set_outputs
+  set_wallpaper
+} &

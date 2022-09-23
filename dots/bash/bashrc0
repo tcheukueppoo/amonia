@@ -101,7 +101,9 @@ __jump_to_dir() {
 	[[ -n "$direc" ]] && eval "[[ -d $direc ]] && cd $direc"
 }
 
-__wfmux() { command -v wfmux >/dev/null && wfmux -f; }
+__wfmux() {
+	command -v wfmux >/dev/null && { [[ -n "$TMUX" ]] || wfmux open; }
+}
 
 __append_path "$HOME/.local/bin"
 __append_path "$HOME/.raku/bin"
@@ -121,4 +123,4 @@ export NNN_FCOLORS="$BLK$CHR$DIR$EXE$REG$HARDLINK$SYMLINK$MISSING$ORPHAN$FIFO$SO
 export NNN_COLORS='4321'
 
 ## always use tmux
-command -v wfmux >/dev/null && { [[ -n "$TMUX" ]] || wfmux -f; }
+__wfmux
