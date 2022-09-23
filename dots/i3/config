@@ -105,9 +105,9 @@ bindsym $mod+v split v
 bindsym $mod+f fullscreen toggle
 
 # change container layout (stacked, tabbed, toggle split)
-bindsym $mod+s layout stacking
+bindsym $mod+t layout stacking
 bindsym $mod+w layout tabbed
-bindsym $mod+e layout toggle split
+#bindsym $mod+e layout toggle split
 
 # toggle tiling / floating
 bindsym $mod+Shift+f floating toggle; resize set 1200 800 px; move absolute position center
@@ -179,9 +179,9 @@ bindsym $mod+Shift+egrave     move container to workspace number 1
 bindsym $mod+x move workspace to output next
 
 # reload the configuration file
-bindsym $mod+Shift+f1 reload
+bindsym $mod+Shift+F1 reload
 # restart i3 inplace (preserves your layout/session, can be used to upgrade i3)
-bindsym $mod+Shift+r restart
+bindsym $mod+Shift+F2 restart
 # exit i3 (logs you out of your X session)
 bindsym $mod+Shift+e exec "i3-nagbar -t warning -m 'You pressed the exit shortcut. Do you really want to exit i3? This will end your X session.' -B 'Yes, exit i3' 'i3-msg exit'"
 
@@ -208,10 +208,10 @@ mode "resize" {
         # back to normal: Enter or Escape or $mod+r
         bindsym Return mode "default"
         bindsym Escape mode "default"
-        bindsym $mod+r mode "default"
+        bindsym $mod+s mode "default"
 }
 
-bindsym $mod+r mode "resize"
+bindsym $mod+s mode "resize"
 
 # Start i3bar to display a workspace bar (plus the system information i3status
 # finds out, if available)
@@ -242,7 +242,7 @@ assign [class="firefox"]          4
 assign [class="ffplay"]           5
 
 # class                 border  backgr. text    indicator child_border
-client.focused          #458588 #285577 #ffffff #458588   #458588
+client.focused          #458588 #458588 #ffffff #458588   #458588
 client.focused_inactive #333333 #5f676a #ffffff #484e50   #5f676a
 client.unfocused        #333333 #222222 #888888 #000000   #000000
 client.urgent           #2f343a #900000 #ffffff #cc241d   #cc241d
@@ -253,5 +253,14 @@ client.background       #ffffff
 focus_follows_mouse no
 mouse_warping none
 popup_during_fullscreen smart
+
+bindsym $mod+Shift+a exec --no-startup-id taski
+bindsym $mod+i       exec --no-startup-id i3lock -i "$HOME/.wallpaper"
+bindsym $mod+z       exec --no-startup-id viper stop
+bindsym $mod+e       exec --no-startup-id sadp -search 'dmenu -p Search -i -c -l 20 -z 500 -h 20'
+bindsym $mod+r       exec --no-startup-id sadp -next
+bindsym $mod+Shift+r exec --no-startup-id sadp -prev
+bindsym $mod+q       exec --no-startup-id nohup sadp -pause
+bindsym $mod+Shift+q exec --no-startup-id nohup sadp -repeat >/dev/null 2>&1
 
 exec i3-config-wizard
