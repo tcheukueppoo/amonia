@@ -5,7 +5,7 @@ set window-title-home-tilde true
 set statusbar-home-tilde true
 set page-padding 0
 
-set font "Fantasque Sans Mono 15"
+set font "FantasqueSansMono Nerd Font 15"
 #set window-height 1024
 #set window-width 768
 set render-loading false
@@ -22,35 +22,45 @@ set scroll-step 50
 set incremental-search true
 set guioptions ""
 
-set recolor			true
-set recolor-keephue		true
-# kubox colorscheme
-set default-bg                  "#dedede"
-set default-fg                  "#dedede"
-set statusbar-fg                "#1b1b1f"
-set statusbar-bg                "#dedede"
-set inputbar-bg                 "#dedede"
-set inputbar-fg                 "#1b1b1f"
-set notification-bg             "#dedede"
-set notification-fg             "#458588"
-set notification-error-bg       "#dedede"
-set notification-error-fg       "#a35d5d"
-set notification-warning-bg     "#dedede"
-set notification-warning-fg     "#a35d5d"
-set highlight-color             "#444444"
-set highlight-active-color      "#458588"
-set completion-bg               "#dedede"
-set completion-fg               "#1b1b1f"
-set completion-highlight-fg     "#dedede"
-set completion-highlight-bg     "#458588"
-set recolor-lightcolor          "#002b36"
-set recolor-darkcolor           "#1b1b1f"
-set recolor-lightcolor			"#dedede"
-set completion-group-bg         "#19191c"
-set completion-group-fg         "#1b1b1f"
-set index-bg					"#dedede"
-set index-fg					"#1b1b1f"
-set index-active-bg				"#458588"
-set index-active-fg				"#1b1b1f"
+set notification-error-bg       "#fbf1c7" # bg
+set notification-error-fg       "#9d0006" # bright:red
+set notification-warning-bg     "#fbf1c7" # bg
+set notification-warning-fg     "#b57614" # bright:yellow
+set notification-bg             "#fbf1c7" # bg
+set notification-fg             "#79740e" # bright:green
+
+set completion-bg               "#d5c4a1" # bg2
+set completion-fg               "#3c3836" # fg
+set completion-group-bg         "#ebdbb2" # bg1
+set completion-group-fg         "#928374" # gray
+set completion-highlight-bg     "#076678" # bright:blue
+set completion-highlight-fg     "#d5c4a1" # bg2
+
+# Define the color in index mode
+set index-bg                    "#d5c4a1" # bg2
+set index-fg                    "#3c3836" # fg
+set index-active-bg             "#076678" # bright:blue
+set index-active-fg             "#d5c4a1" # bg2
+
+set inputbar-bg                 "#fbf1c7" # bg
+set inputbar-fg                 "#3c3836" # fg
+
+set statusbar-bg                "#d5c4a1" # bg2
+set statusbar-fg                "#3c3836" # fg
+
+set highlight-color             "#b57614" # bright:yellow
+set highlight-active-color      "#af3a03" # bright:orange
+
+set default-bg                  "#bdae93" # bg
+set default-fg                  "#3c3836" # fg
+set render-loading              true
+set render-loading-bg           "#fbf1c7" # bg
+set render-loading-fg           "#3c3836" # fg
+
+# Recolor book content's color
+set recolor-lightcolor          "#bdae93" # bg
+set recolor-darkcolor           "#3c3836" # fg
+set recolor                     "true"
+# set recolor-keephue             true      # keep original color
 
 # vim: ft=cfg
