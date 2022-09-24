@@ -242,7 +242,7 @@ assign [class="firefox"]          4
 assign [class="ffplay"]           5
 
 # class                 border  backgr. text    indicator child_border
-client.focused          #458588 #458588 #f2e5bc #458588   #458588
+client.focused          #458588 #458588 #000000 #458588   #458588
 client.focused_inactive #333333 #5f676a #ffffff #484e50   #5f676a
 client.unfocused        #7c6f64 #7c6f64 #bdae93 #000000   #7c6f64
 client.urgent           #2f343a #900000 #ffffff #cc241d   #cc241d

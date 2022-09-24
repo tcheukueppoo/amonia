@@ -38,7 +38,7 @@ fi
 
 # wrapper to module-starter
 ms() {
-	[[ $# -eq 2 ]] && module-starter --module="$1" --$2 --email="tcheukueppo@gmail.com" --license=gpl3 --author="Kueppo Tcheukam"
+	[[ $# -eq 2 ]] && module-starter --module="$1" --$2
 }
 
 ### functions
