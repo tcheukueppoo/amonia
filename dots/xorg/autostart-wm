@@ -20,17 +20,22 @@ set_outputs() {
 		for display in $outputs
 		do
 			xrandr --output "$display" --auto --rotate normal --right-of "$pdisplay"
-			xrandr --output "$display" --brightness 0.80
+			#xrandr --output "$display" --brightness 0.80
 			pdisplay=$display
 		done
 	fi
+}
+
+map_key() {
+	xcape -e 'F1=Escape'
+}
+
+disable_input() {
+	xinput --disable "PS/2 Generic Mouse"
 }
 
 change_key() {
 	command -v xcape && xcape -e 'F1=Escape'
 }
 
-{ change_key
-  set_outputs
-  set_wallpaper
-} &
+{ set_outputs; set_wallpaper; disable_input; change_key; } &

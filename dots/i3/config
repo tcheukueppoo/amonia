@@ -33,7 +33,7 @@ exec --no-startup-id xss-lock --transfer-sleep-lock -- i3lock --nofork
 exec --no-startup-id nm-applet
 
 exec --no-startup-id xcape -e 'F1=Escape'
-exec --no-startup-id "$HOME/.fehbg"
+exec --no-startup-id autostart-wm
 
 
 # Use pactl to adjust volume in PulseAudio.
