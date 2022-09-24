@@ -107,7 +107,7 @@ bindsym $mod+f fullscreen toggle
 # change container layout (stacked, tabbed, toggle split)
 bindsym $mod+t layout stacking
 bindsym $mod+w layout tabbed
-#bindsym $mod+e layout toggle split
+bindsym $mod+o layout toggle split
 
 # toggle tiling / floating
 bindsym $mod+Shift+f floating toggle; resize set 1200 800 px; move absolute position center
@@ -243,8 +243,8 @@ assign [class="ffplay"]           5
 
 # class                 border  backgr. text    indicator child_border
 client.focused          #458588 #458588 #000000 #458588   #458588
-client.focused_inactive #333333 #5f676a #ffffff #484e50   #5f676a
-client.unfocused        #7c6f64 #7c6f64 #bdae93 #000000   #7c6f64
+client.focused_inactive #5f676a #5f676a #ffffff #484e50   #5f676a
+client.unfocused        #7c6f64 #7c6f64 #bdae93 #7c6f64   #7c6f64
 client.urgent           #2f343a #900000 #ffffff #cc241d   #cc241d
 client.placeholder      #000000 #0c0c0c #ffffff #000000   #0c0c0c
 
