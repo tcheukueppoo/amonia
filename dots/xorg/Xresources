@@ -45,7 +45,7 @@ slock.blur_radius:         20
 
 !! X11 applications setting
 Xft.hinting:               1
-Xft.dpi:                   90
+Xft.dpi:                   80
 Xft.hintstyle:             hintslight
 Xft.antialias:             1
 Xft.rgba:                  rgb
