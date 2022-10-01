@@ -21,4 +21,5 @@
 --valign-block-comments
 --valign-code
 --valign-side-comments
+--square-bracket-tightness=0
 --want-break-before="% + - * / x != == >= <= =~ !~ < > | & >= < = **= += *= &= <<= &&= -= /= |= >>= ||= .= %= ^= x= and or xor"

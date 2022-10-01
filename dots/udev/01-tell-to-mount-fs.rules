@@ -1,0 +1,4 @@
+# tell ktoolbox/mountfs to mount dev block given via named-pipe
+
+ACTION=="add", SUBSYSTEM=="block", ENV{DEVTYPE}=="disk", RUN+="herbe 'USB(%E{DEVNAME})' 'A new usb devices has been connected'" 
+ACTION=="add", SUBSYSTEM=="block", ENV{DEVTYPE}=="partition", RUN+="tmount"
