@@ -95,6 +95,7 @@ pacman:
     - entr
     - fzf
     - tmux
+    - tmate
     - vim
     - texlive-bin
     - texlive-core
