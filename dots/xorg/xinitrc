@@ -40,8 +40,24 @@ cat /dev/null $xresources | xrdb -merge -
 command -v setxkbmap >/dev/null && setxkbmap -layout fr &
 
 # xcompmgr compositor
-#command -v xcompmgr >/dev/null && xcompmgr -l 0.2 -t 0.2 -r 1.7 -I 0.2 -O 0.2 -D 30 -c -C -f &
-command -v picom >/dev/null && picom &
+#command -v xcompmgr >/dev/null \
+#   && xcompmgr \
+#      -l 0.2 \
+#      -t 0.2 \
+#      -r 1.7 \
+#      -I 0.2 \
+#      -O 0.2 \
+#      -D 30 \
+#      -c \
+#      -C \
+#      -f &
+
+#command -v picom >/dev/null && picom &
+command -v compton >/dev/null \
+   && compton \
+      --shadow-offset-x -20 \
+      --shadow-offset-y -20 \
+      --shadow &
 
 # start the window manager
-exec i3
+exec dwm

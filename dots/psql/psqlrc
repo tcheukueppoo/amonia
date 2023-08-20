@@ -1,0 +1,11 @@
+\timing on
+\pset linestyle unicode
+\pset null '(null)'
+\pset border 2
+\pset footer off
+\pset unicode_header_linestyle double
+\set PROMPT1 '%n@%M:%>%x %/# '
+\cd ~/data
+\set user `echo $HOME`
+\setenv PGHOST :user'/run/postgresql'
+\setenv PGUSER wesley

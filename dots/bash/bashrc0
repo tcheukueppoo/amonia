@@ -24,8 +24,6 @@ shopt -s checkwinsize
 
 ### Map keyseq to the below shell functions
 bind -x '"\C-x":__jump_to_dir'
-bind -x '"\C-k":__write_dirty_scripts'
-bind -x '"\C-l":__exec_latest'
 bind -x '"\C-y":printf "$READLINE_LINE" | xclip -in -selection clip'
 
 ## source completion programs to enable programable completion
@@ -48,51 +46,12 @@ __append_path() {
 	[[ -d "$new_path" || -x "$new_path" ]] && { [[ "$PATH" =~ :{0,}${new_path%%/}/?(:{1,}|$) ]] || export PATH="${PATH:+$PATH:}$new_path"; }
 }
 
-__exec_latest() {
-	local trash_dir="$HOME/.local/bin/.trash"
-
-	if [[ -d "$trash_dir" ]]; then
-		local latest_exec
-
-		latest_exec=$(ls -t "$trash_dir" | head -n1)
-		eval "$trash_dir/$latest_exec"
-	fi
-}
-
-__write_dirty_scripts() {
-	command -v fzf >/dev/null || return $?
-
-	local trash_dir=$HOME
-
-	for i in {.local,bin,.trash}; do trash_dir+="/$i"; mkdir -p "$trash_dir"; done
-	if [[ -d "$trash_dir" ]]; then
-		local -A map=(
-			[sh]="sh"     [pl]="perl"
-			[p6]="raku"   [js]="node"
-			[bc]="bc"     [lua]="lua"
-			[bash]="bash" [awk]=""
-		)
-		local extension=$(for ext in "${!map[@]}"; do printf '%s\n' "$ext"; done | fzf --layout=reverse)
-
-		if [[ -n "$extension" ]]; then
-			local count=$(ls $trash_dir/*.$extension 2>/dev/null | wc -l)
-			local trash="$trash_dir/${count}_trash.$extension"	
-
-			[[ -f "$trash" && `cat $trash | wc -l` == "2" ]] || trash="$trash_dir/$((++count))_trash.$extension"
-			## awk doesn't support 'env' since it requres '-f' to specify the source  file
-			printf '%s\n\n' "$( [[ "$extension" != "awk" ]] && printf '#!/usr/bin/env %s' "${map[$extension]}" || printf '#!/usr/bin/awk -f' )" >"$trash"
-			chmod u+x "$trash"
-			${EDITOR:-vis} "$trash"
-		fi
-	fi
-}
-
 __jump_to_dir() {
 	command -v fzf >/dev/null || return $?
 
 	local direc=$(
 	      history \
-		| perl -ne 's{^ +\d+ +cd +(?|((?:~(?:|[-\.\w]+))?(?:/(?>(?:[-\.\w]|[\\ ])+))+/?)|('\''(?:/(?>[-\.\w ]*))+/?'\''))}[print $1, "\n"]e' \
+		 | perl -ne 's{^ +\d+ +cd +(?|((?:~(?:|[-\.\w]+))?(?:/(?>(?:[-\.\w]|[\\ ])+))+/?)|('\''(?:/(?>[-\.\w ]*))+/?'\''))}[print $1, "\n"]e' \
 	    | sort  \
 	    | uniq  \
 	    | fzf --layout=reverse
@@ -101,12 +60,8 @@ __jump_to_dir() {
 	[[ -n "$direc" ]] && eval "[[ -d $direc ]] && cd $direc"
 }
 
-__wfmux() {
-	command -v wfmux >/dev/null && { [[ -n "$TMUX" ]] || wfmux open; }
-}
-
-__append_path "$HOME/.local/bin"
-__append_path "$HOME/.raku/bin"
+#__append_path "$HOME/.local/bin"
+#__append_path "$HOME/.raku/bin"
 __append_path "$HOME/bin"
 __append_path "$HOME/node_modules/.bin"
 __append_path "/usr/share/perl6/site/bin"
@@ -121,6 +76,3 @@ export NNN_FCOLORS="$BLK$CHR$DIR$EXE$REG$HARDLINK$SYMLINK$MISSING$ORPHAN$FIFO$SO
 # Unique color for each context
 # 0-black, 1-red, 2-green, 3-yellow, 4-blue (default), 5-magenta, 6-cyan, 7-white
 export NNN_COLORS='4321'
-
-## always use tmux
-__wfmux

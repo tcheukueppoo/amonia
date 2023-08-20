@@ -1,41 +1,39 @@
-! Xresources configuration for clients
 ! -----------------------------------------------------------------------------
-! File: gruvbox-light.xresources
+! File: gruvbox-dark.xresources
 ! Description: Retro groove colorscheme generalized
 ! Author: morhetz <morhetz@gmail.com>
 ! Source: https://github.com/morhetz/gruvbox-generalized
 ! Last Modified: 6 Sep 2014
 ! -----------------------------------------------------------------------------
 
-! hard contrast: *background: #f9f5d7
-*background: #bdae93
-! soft contrast: *background: #f2e5bc
-*foreground: #000000
+! hard contrast: *background: #1d2021
+*background: #161616
+! soft contrast: *background: #32302f
+*foreground: #ebdbb2
 ! Black + DarkGrey
-*color0:  #fdf4c1
+*color0:  #282828
 *color8:  #928374
 ! DarkRed + Red
 *color1:  #cc241d
-*color9:  #9d0006
+*color9:  #fb4934
 ! DarkGreen + Green
 *color2:  #98971a
-*color10: #79740e
+*color10: #b8bb26
 ! DarkYellow + Yellow
 *color3:  #d79921
-*color11: #b57614
+*color11: #fabd2f
 ! DarkBlue + Blue
 *color4:  #458588
-*color12: #076678
+*color12: #83a598
 ! DarkMagenta + Magenta
 *color5:  #b16286
-*color13: #8f3f71
+*color13: #d3869b
 ! DarkCyan + Cyan
 *color6:  #689d6a
-*color14: #427b58
+*color14: #8ec07c
 ! LightGrey + White
-*color7:  #7c6f64
-*color15: #3c3836
-
+*color7:  #a89984
+*color15: #ebdbb2
 !! Slock Xresources config
 slock.color_pam:           #32a883
 slock.text_color:          #bdae93
@@ -45,7 +43,7 @@ slock.blur_radius:         20
 
 !! X11 applications setting
 Xft.hinting:               1
-Xft.dpi:                   80
+!Xft.dpi:                   80
 Xft.hintstyle:             hintslight
 Xft.antialias:             1
 Xft.rgba:                  rgb
@@ -54,15 +52,9 @@ Xft.lcdfilter:             lcddefault
 Xft.font:                  FantasqueSansMono Nerd Font:size=20
 
 st.borderpx:               18
-st.alpha:                  0.95
-st.font:                   FantasqueSansMono Nerd Font:pixelsize=16
-
+st.alpha:                  0.8
+st.font:                   FantasqueSansMono Nerd Font:pixelsize=14
 
 !! dwm
-!dwm.topbar:                0
-!dwm.selbgcolor:
-!dwm.selfgcolor:
-!dwm.normbgcolor:
-!dwm.normfgcolor:
-!dwm.selbordercolor:        #b6bd5c
-!dwm.normbordercolor:       #dedede
+dwm.topbar:      0
+dwm.normbgcolor: #161616
