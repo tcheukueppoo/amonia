@@ -26,20 +26,19 @@ shopt -s checkwinsize
 bind -x '"\C-x":__jump_to_dir'
 bind -x '"\C-y":printf "$READLINE_LINE" | xclip -in -selection clip'
 
-## source completion programs to enable programable completion
-if [[ -d "/usr/share/bash-completion/completions/" ]]; then
-	{ for cmp in /usr/share/bash-completion/completions/*; do
-	    source "$cmp"
-	  done
-	} 2>/dev/null
-fi
+# source completion programs to enable programable completion
+lcmp() {
+   if [[ -d "/usr/share/bash-completion/completions/" ]]; then
+      for cmp in /usr/share/bash-completion/completions/*; do source "$cmp"; done
+   fi
+}
 
 # wrapper to module-starter
 ms() {
 	[[ $# -eq 2 ]] && module-starter --module="$1" --$2
 }
 
-### functions
+### internal functions
 __append_path() {
 	local new_path="$1"
 
