@@ -59,5 +59,8 @@ command -v compton >/dev/null \
       --shadow-offset-y -20 \
       --shadow &
 
+command -v slstatus >/dev/null  && slstatus 2>/dev/null &
+#command -v conky && conky -q -c ~/.config/conky.conf
+
 # start the window manager
 exec dwm

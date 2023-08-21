@@ -1,1 +1,1 @@
-[ -x ~/.bashrc0 ] && . ~/.bashrc0
+for cfg in ~/.bashrc{0..2} ; do test -f "$cfg" && . "$cfg" ; done

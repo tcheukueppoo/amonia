@@ -1,41 +1,42 @@
 #!/bin/sh
 
 set_wallpaper() {
-	[ -x "$HOME/.fehbg" ] && . "$HOME/.fehbg"
-}
-
-# set outputs X1, X2, ...., Xn where Xn is right of Xn-1
-set_outputs() {
-	local outputs=$(xrandr --listmonitors | tail -n +2 | awk -F[' *'] '{print $4}' | tr '\n' ':')
-	[ -n "$outputs" ] || return
-
-	local pdisplay=${outputs%%:*}
-	xrandr --output "$pdisplay" --auto --rotate normal
-	xrandr --output "$pdisplay" --brightness 0.80
-
-	outputs=${outputs#*:}
-	if [ -n "$outputs" ]
-	then
-		IFS=$':'
-		for display in $outputs
-		do
-			xrandr --output "$display" --auto --rotate normal --right-of "$pdisplay"
-			#xrandr --output "$display" --brightness 0.80
-			pdisplay=$display
-		done
-	fi
-}
-
-map_key() {
-	xcape -e 'F1=Escape'
+	command -v feh && test -x "$HOME/.fehbg" && . "$HOME/.fehbg"
 }
 
 disable_input() {
-	xinput --disable "PS/2 Generic Mouse"
+	command -v xinput && xinput --disable "PS/2 Generic Mouse"
 }
 
-change_key() {
+map_key() {
 	command -v xcape && xcape -e 'F1=Escape'
 }
 
-{ set_outputs; set_wallpaper; disable_input; change_key; } &
+# set outputs X(1), X(2), ...., X(n) where X(k) is right of X(k-1)
+set_outputs() {
+   local outputs pdisplay
+
+	outputs=$(xrandr --listmonitors | tail -n +2 | awk -F[' *'] '{print $4}' | tr '\n' ':')
+	test -z "$outputs" && return
+
+	pdisplay=${outputs%%:*}
+
+	xrandr --output "$pdisplay" --auto --rotate normal
+	xrandr --output "$pdisplay" --brightness 0.80
+	outputs=${outputs#*:}
+
+	test -z "$outputs" && return
+   IFS=$':'
+   for display in $outputs ; do
+      xrandr --output "$display" --brightness 0.80
+      xrandr --output "$display" --auto --rotate normal --right-of "$pdisplay"
+      pdisplay=$display
+   done
+}
+
+{
+   set_outputs
+   set_wallpaper
+   # disable_input
+   # map_key
+} >/dev/null 2>&1 &
