@@ -38,28 +38,16 @@ cat /dev/null $xresources | xrdb -merge -
 
 # set keyboard layout to fr
 command -v setxkbmap >/dev/null && setxkbmap -layout fr &
+command -v picom >/dev/null && picom &
 
-# xcompmgr compositor
-#command -v xcompmgr >/dev/null \
-#   && xcompmgr \
-#      -l 0.2 \
-#      -t 0.2 \
-#      -r 1.7 \
-#      -I 0.2 \
-#      -O 0.2 \
-#      -D 30 \
-#      -c \
-#      -C \
-#      -f &
-
-#command -v picom >/dev/null && picom &
-command -v compton >/dev/null \
-   && compton \
-      --shadow-offset-x -20 \
-      --shadow-offset-y -20 \
-      --shadow &
+#command -v compton >/dev/null \
+#   && compton \
+#      --shadow-offset-x -20 \
+#      --shadow-offset-y -20 \
+#      --shadow &
 
 command -v slstatus >/dev/null  && slstatus 2>/dev/null &
+
 #command -v conky && conky -q -c ~/.config/conky.conf
 
 # start the window manager

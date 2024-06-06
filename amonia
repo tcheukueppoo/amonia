@@ -1,46 +1,99 @@
-#!/usr/bin/env sh
+#!/bin/sh
 
-## git repos:
-##  kfetch:   https://codeberg.org/tcheukueppo/kfetch
-##  ktoolbox: https://codeberg.org/tcheukueppo/ktoolbox
-##  me:       https://codeberg.org/tcheukueppo/amonia
+tcheukueppo='https://codeberg.org/tcheukueppo'
+webkit_version=
+
+sudo hostnamectl hostname $hostname
+
+mkdir -p ~/projects && cd ~/projects
+
+if test "$NAME" = "Arch Linux" ; then
+
+   sudo pacman -Syu man texinfo cronie pkgconf usb_modeswitch \
+       pulsemixer pulseaudio-alsa pulseaudio-bluetooth         \
+       bluez bluez-utils acpi alsa-utils psutils inetutils      \
+       coreutils dash bc sed grep ack perl jq yq cpanm nawk      \
+       tree lshw psmisc procps-ng sysstat e2fsprogs gptfdisk      \
+       ntfs-3g hdparm dosfstools parted partclone xdg-utils        \
+       ebtables dex fontconfig tar xz git gcc make usbutils         \
+
+       # st
+       freetype2                                                       \
+       # slock
+       imlib2                                                            \
+
+       feh zathura zathura-pdf-mupdf zathura-cb zathura-ps                 \
+       xorg xorg-xinit xclip xss-lock                                       \
+
+       # wayland sway swayidle wofi swaybg foot swaylock wl-clipboard
+       # cups libglvnd sndio xournalpp xchm conky
+
+       # netutils
+       nmap xinetd bmon socat openssh openbsd-netcat macchanger                   \
+       tcpdump pdnsd ddrescue vulscan ufw tcpreplay dnsmasq lsof                   \
+       tcpflow ipcalc sipcalc wget curl whois networkmanager                        \
+       modemmanager dictd kismet reaver cowpatty
+
+       # misc
+       htop nnn entr fzf tmux tmate vim scrot flameshot pdfgrep                        \
+       gnuplot w3m firefox  tesseract tesseract-data-afr                                \
+       tesseract-data-eng qemu
+     
+       # docs
+       texlive-bin texlive-core pandoc                                                      \
+
+       # media utils
+       ffmpeg imagemagick imagemagick-doc
+       
+
+   # surf
+   webkit_version=`pacman -Ss webkit2gtk | sed -ne 's#extra/webkit2gtk-\([4-9]\.[1-9]\) .*#\1#p'`
+   if test -n "$webkit_version" ; then
+      sudo pacman -S gtk3 gcr webkit2gtk-$webkit_version
+   fi
+
+   while $# -ne 0 ; do
+     case $1 in
+       --docker|-d)
+         sudo pacman -S libvirt vagrant docker aws-cli ;;
+       --nodejs|-n)
+         sudo pacman -S nodejs ts-node npm yarn ;;
+       *) ;;
+     esac
+     shift
+   done
+fi
+
+clone_and_install () {
+   while [ 1 ] ; do
+      if ! test -d $2 ; then
+         rm -vf ./$2
+         git clone --depth 1 "$1" || continue   
+      fi
+      cd $2
+      if test $2 = surf && test -n $webkit_version ; then
+         sed -i "s/webkit2gtk-[4-9]\.[1-9]/webkit2gtk-$webkit_version/g" config.mk
+      fi
+      sudo make install \
+        && make clean \
+        && cd .. \
+        && break
+   done
+}
+
+for r in kst kdwm ksent kdmenu kslock kslstatus ; do
+   clone_and_install "$tcheukueppo/$r" $r
+done
+
+clone_and_install 'https://git.suckless.org/surf' surf
+
+clone_and_install "$tcheukueppo/amonia" amonia
+clone_and_install "$tcheukueppo/ktoolbox" ktoolbox
+
+mkdir -p ~/local/.share/fonts/FantasqueSansMono && cd ~/local/.share/fonts/FantasqueSansMono
+test -f FantasqueSansMono.tar.xz \
+  || wget 'https://github.com/ryanoasis/nerd-fonts/releases/download/v3.2.1/FantasqueSansMono.tar.xz' \
+  && tar -xf FantasqueSansMono.tar.xz \
+  && fc-cache
 
 
-## 1. Check Os type to determine package manager
-## 2. Install the needed applications to run this script
-## 3. 
-
-readonly rgit="codeberg.org github.com gitlab.com"
-
-## softwares
-readonly suckl=$(cat <<EOF
-/sad
-/kst
-/kdwm
-/ksent
-/kdmenu
-/kslock
-/kslstatus
-/kfetch
-/ktoolbox
-/wfmux
-EOF
-)
-
-readonly home_configs=$(cat <<EOF
-bash
-dict
-grub
-picom
-tmux
-vim
-wayland
-xorg
-EOF
-)
-
-readonly on_config_dir=$(cat <<EOF
-conky
-zathura
-EOF
-)
