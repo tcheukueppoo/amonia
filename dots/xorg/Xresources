@@ -52,7 +52,7 @@ Xft.lcdfilter:             lcddefault
 Xft.font:                  FantasqueSansM Nerd Font:size=20
 
 st.borderpx:               18
-st.alpha:                  0.9
+st.alpha:                  1
 st.font:                   FantasqueSansM Nerd Font:pixelsize=14
 
 !! dwm

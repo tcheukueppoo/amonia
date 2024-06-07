@@ -1,99 +1,152 @@
 #!/bin/sh
 
 tcheukueppo='https://codeberg.org/tcheukueppo'
+font_link='https://github.com/ryanoasis/nerd-fonts/releases/download/v3.2.1/FantasqueSansMono.tar.xz'
+package_manager=
 webkit_version=
 
-sudo hostnamectl hostname $hostname
+usage () {
+   cat EOF &2
+Usage: amonia [-d|--docker] [-n|--nodejs]
 
-mkdir -p ~/projects && cd ~/projects
+Amonia is a toxic sh script which aims to setup a developement
+environment for most of the programming langauges and technologies,
+install and configure minimal tools and applications.
 
-if test "$NAME" = "Arch Linux" ; then
+     -d, --docker  install docker and some other related packages
+     -n, --nodejs  install node and some other related packages
+EOF
+   exit 1
+}
 
-   sudo pacman -Syu man texinfo cronie pkgconf usb_modeswitch \
-       pulsemixer pulseaudio-alsa pulseaudio-bluetooth         \
-       bluez bluez-utils acpi alsa-utils psutils inetutils      \
-       coreutils dash bc sed grep ack perl jq yq cpanm nawk      \
-       tree lshw psmisc procps-ng sysstat e2fsprogs gptfdisk      \
-       ntfs-3g hdparm dosfstools parted partclone xdg-utils        \
-       ebtables dex fontconfig tar xz git gcc make usbutils         \
+die () {
+   printf "%s\n" "$1" &2
+   exit 1
+}
 
-       # st
-       freetype2                                                       \
-       # slock
-       imlib2                                                            \
+get_package_manager () {
+   if command -v pacman ; then
+     package_manager=pacman
+   #elif ...
+   fi
+}
 
-       feh zathura zathura-pdf-mupdf zathura-cb zathura-ps                 \
-       xorg xorg-xinit xclip xss-lock                                       \
+download_packages () {
+   if [ $package_manager = pacman ] ; then
+   
+      sudo pacman -Syu man texinfo cronie pkgconf usb_modeswitch              \
+        pulsemixer pulseaudio-equalizer pulseaudio-alsa pulseaudio-bluetooth   \
+        bluez bluez-utils acpi alsa-utils psutils inetutils coreutils dash bc   \
+        sed grep ack perl cpanm jq yq nawk tree lshw psmisc procps-ng sysstat    \
+        e2fsprogs gptfdisk ntfs-3g hdparm dosfstools parted partclone xdg-utils   \
+        ebtables dex fontconfig tar xz git gcc make usbutils                       \
+   
+        # st
+        freetype2                                                                     \
+        # slock
+        imlib2                                                                          \
+   
+        feh zathura zathura-pdf-mupdf zathura-cb zathura-ps                               \
+        xorg xorg-xinit xclip xss-lock                                                     \
+   
+        # wayland sway swayidle wofi swaybg foot swaylock wl-clipboard
+        # cups libglvnd sndio xournalpp xchm conky
+   
+        # netutils
+        nmap xinetd bmon socat openssh openbsd-netcat macchanger tcpdump pdnsd                  \
+        ddrescue vulscan ufw tcpreplay dnsmasq lsof tcpflow ipcalc sipcalc wget                  \
+        curl whois networkmanager modemmanager dictd kismet reaver cowpatty                       \
+   
+        # misc
+        htop nnn entr fzf tmux tmate vim scrot flameshot pdfgrep gnuplot w3m                         \
+        firefox tesseract tesseract-data-afr tesseract-data-eng qemu                                  \
+        
+        # docs
+        texlive-bin texlive-core pandoc                                                                  \
+   
+        # media utils
+        ffmpeg imagemagick imagemagick-doc
+          
+      # surf
+      webkit_version=`pacman -Ss webkit2gtk | sed -ne 's#extra/webkit2gtk-\([4-9]\.[1-9]\) .*#\1#p'`
+      if test -n "$webkit_version" ; then
+         sudo pacman -Syu gtk3 gcr webkit2gtk-$webkit_version
+      fi
 
-       # wayland sway swayidle wofi swaybg foot swaylock wl-clipboard
-       # cups libglvnd sndio xournalpp xchm conky
-
-       # netutils
-       nmap xinetd bmon socat openssh openbsd-netcat macchanger                   \
-       tcpdump pdnsd ddrescue vulscan ufw tcpreplay dnsmasq lsof                   \
-       tcpflow ipcalc sipcalc wget curl whois networkmanager                        \
-       modemmanager dictd kismet reaver cowpatty
-
-       # misc
-       htop nnn entr fzf tmux tmate vim scrot flameshot pdfgrep                        \
-       gnuplot w3m firefox  tesseract tesseract-data-afr                                \
-       tesseract-data-eng qemu
-     
-       # docs
-       texlive-bin texlive-core pandoc                                                      \
-
-       # media utils
-       ffmpeg imagemagick imagemagick-doc
-       
-
-   # surf
-   webkit_version=`pacman -Ss webkit2gtk | sed -ne 's#extra/webkit2gtk-\([4-9]\.[1-9]\) .*#\1#p'`
-   if test -n "$webkit_version" ; then
-      sudo pacman -S gtk3 gcr webkit2gtk-$webkit_version
+   else
+      die "Unknown package manager."
    fi
 
    while $# -ne 0 ; do
-     case $1 in
-       --docker|-d)
-         sudo pacman -S libvirt vagrant docker aws-cli ;;
-       --nodejs|-n)
-         sudo pacman -S nodejs ts-node npm yarn ;;
-       *) ;;
-     esac
-     shift
+      case $1 in
+         --docker|-d)
+            if [ $package_manager = pacman ] ; then
+               sudo pacman -Syu libvirt vagrant docker aws-cli
+            fi
+            ;;
+         --nodejs|-n)
+            if [ $package_manager = pacman ] ; then
+               sudo pacman -Syu nodejs ts-node npm yarn
+            fi
+            ;;
+         *) usage ;;
+      esac
+      shift
    done
-fi
+}
 
-clone_and_install () {
+do_clone_build_install () {
    while [ 1 ] ; do
       if ! test -d $2 ; then
          rm -vf ./$2
          git clone --depth 1 "$1" || continue   
       fi
-      cd $2
-      if test $2 = surf && test -n $webkit_version ; then
-         sed -i "s/webkit2gtk-[4-9]\.[1-9]/webkit2gtk-$webkit_version/g" config.mk
+      if test -d $2 ; then
+         if test $2 = surf && test -n $webkit_version ; then
+            sed -i "s/webkit2gtk-[4-9]\.[1-9]/webkit2gtk-$webkit_version/g" config.mk
+         fi
+         cd -L $2              \
+           && sudo make install \
+           && make clean
+         cd ..
+         break
       fi
-      sudo make install \
-        && make clean \
-        && cd .. \
-        && break
    done
 }
 
-for r in kst kdwm ksent kdmenu kslock kslstatus ; do
-   clone_and_install "$tcheukueppo/$r" $r
-done
+# Clone, build and install custom software
+clone_build_install () {
+   mkdir -p ~/projects && cd ~/projects
+   
+   for r in kst kdwm ksent kdmenu kslock kslstatus amonia ktoolbox ; do
+      do_clone_build_install "$tcheukueppo/$r" $r
+   done
+   do_clone_build_install 'https://git.suckless.org/surf' surf
+}
+   
+# Configure fonts
+setup_fonts () {
+   mkdir -p ~/local/.share/fonts/FantasqueSansMono && cd ~/local/.share/fonts/FantasqueSansMono
 
-clone_and_install 'https://git.suckless.org/surf' surf
+   test -f FantasqueSansMono.tar.xz      \
+     || wget "$font_link"                 \
+     && tar -xf FantasqueSansMono.tar.xz   \
+     && fc-cache
+}
 
-clone_and_install "$tcheukueppo/amonia" amonia
-clone_and_install "$tcheukueppo/ktoolbox" ktoolbox
+misc_configs () { 
+   if command -v systemctl ; then
+      sudo hostnamectl hostname $hostname
+      systemctl --user enable pulseaudio
+   fi
+}
 
-mkdir -p ~/local/.share/fonts/FantasqueSansMono && cd ~/local/.share/fonts/FantasqueSansMono
-test -f FantasqueSansMono.tar.xz \
-  || wget 'https://github.com/ryanoasis/nerd-fonts/releases/download/v3.2.1/FantasqueSansMono.tar.xz' \
-  && tar -xf FantasqueSansMono.tar.xz \
-  && fc-cache
+main () {
+   get_package_manager
+   download_packages
+   clone_build_install
+   setup_fonts
+   misc_configs
+}
 
-
+main
