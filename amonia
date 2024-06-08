@@ -1,12 +1,14 @@
 #!/bin/sh
 
 tcheukueppo='https://codeberg.org/tcheukueppo'
-font_link='https://github.com/ryanoasis/nerd-fonts/releases/download/v3.2.1/FantasqueSansMono.tar.xz'
+firacode='https://github.com/ryanoasis/nerd-fonts/releases/download/v3.2.1/FiraCode.tar.xz'
+vim_plug='https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
+surf='https://git.suckless.org/surf'
 package_manager=
 webkit_version=
 
 usage () {
-   cat EOF &2
+   cat <<EOF >&2
 Usage: amonia [-d|--docker] [-n|--nodejs]
 
 Amonia is a toxic sh script which aims to setup a developement
@@ -20,7 +22,7 @@ EOF
 }
 
 die () {
-   printf "%s\n" "$1" &2
+   printf "%s\n" "$1" >&2
    exit 1
 }
 
@@ -47,22 +49,22 @@ download_packages () {
         imlib2                                                                          \
    
         feh zathura zathura-pdf-mupdf zathura-cb zathura-ps                               \
-        xorg xorg-xinit xclip xss-lock                                                     \
+        xorg xorg-xinit xclip xss-lock xcape xorg-xmodmap                                  \
    
         # wayland sway swayidle wofi swaybg foot swaylock wl-clipboard
         # cups libglvnd sndio xournalpp xchm conky
    
         # netutils
-        nmap xinetd bmon socat openssh openbsd-netcat macchanger tcpdump pdnsd                  \
-        ddrescue vulscan ufw tcpreplay dnsmasq lsof tcpflow ipcalc sipcalc wget                  \
-        curl whois networkmanager modemmanager dictd kismet reaver cowpatty                       \
+        nmap xinetd bmon socat openssh openbsd-netcat macchanger tcpdump pdnsd                   \
+        ddrescue vulscan ufw tcpreplay dnsmasq lsof tcpflow ipcalc sipcalc wget                   \
+        curl whois networkmanager modemmanager dictd kismet reaver cowpatty                        \
    
         # misc
-        htop nnn entr fzf tmux tmate vim scrot flameshot pdfgrep gnuplot w3m                         \
-        firefox tesseract tesseract-data-afr tesseract-data-eng qemu                                  \
+        htop nnn entr fzf tmux tmate vim scrot flameshot pdfgrep gnuplot w3m                          \
+        firefox tesseract tesseract-data-afr tesseract-data-eng qemu                                   \
         
         # docs
-        texlive-bin texlive-core pandoc                                                                  \
+        texlive-bin texlive-core pandoc                                                                   \
    
         # media utils
         ffmpeg imagemagick imagemagick-doc
@@ -121,32 +123,39 @@ clone_build_install () {
    for r in kst kdwm ksent kdmenu kslock kslstatus amonia ktoolbox ; do
       do_clone_build_install "$tcheukueppo/$r" $r
    done
-   do_clone_build_install 'https://git.suckless.org/surf' surf
+   do_clone_build_install "$surf" surf
 }
    
 # Configure fonts
 setup_fonts () {
-   mkdir -p ~/local/.share/fonts/FantasqueSansMono && cd ~/local/.share/fonts/FantasqueSansMono
+   mkdir -p ~/.local/share/fonts/firacode && cd ~/.local/share/fonts/firacode
 
-   test -f FantasqueSansMono.tar.xz      \
-     || wget "$font_link"                 \
-     && tar -xf FantasqueSansMono.tar.xz   \
+   test -f FiraCode.tar.xz      \
+     || wget "$firacode"         \
+     && tar -xf FiraCode.tar.xz   \
      && fc-cache
 }
 
 misc_configs () { 
-   if command -v systemctl ; then
-      sudo hostnamectl hostname $hostname
+   if command -v systemctl >/dev/null ; then
       systemctl --user enable pulseaudio
+      systemctl --user restart pulseaudio
+      sudo hostnamectl hostname madjou
+      sudo localectl set-keymap fr
+      sudo timedatectl set-timezone Africa/Douala
+      sudo systemctl enable systemd-timesyncd
    fi
+
+   curl -fLo ~/.vim/autoload/plug.vim --create-dirs "$vim_plug"
+   vim -c PlugInstall -c q -c q 
 }
 
 main () {
-   get_package_manager
-   download_packages
-   clone_build_install
+   #get_package_manager
+   #download_packages
+   #clone_build_install
    setup_fonts
-   misc_configs
+   #misc_configs
 }
 
 main

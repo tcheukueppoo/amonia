@@ -1,42 +1,45 @@
 #!/bin/sh
 
-set_wallpaper() {
+set_wallpaper () {
 	command -v feh && test -x "$HOME/.fehbg" && . "$HOME/.fehbg"
 }
 
-disable_input() {
+disable_input () {
 	command -v xinput && xinput --disable "PS/2 Generic Mouse"
 }
 
-map_key() {
-	command -v xcape && xcape -e 'F1=Escape'
+remap_keys () {
+	# command -v xcape && xcape -e 'F1=Escape'
+   xmodmap -e 'pointer    = 3 2 1' \
+           -e 'keycode 35 = dollar less' \
+           -e 'keycode 51 = asterisk greater'
 }
 
-# set outputs X(1), X(2), ...., X(n) where X(k) is right of X(k-1)
-set_outputs() {
+# Set outputs X(1), X(2), ...., X(n) where X(k) is right of X(k-1)
+configure_monitors () {
    local outputs pdisplay
 
-	outputs=$(xrandr --listmonitors | tail -n +2 | awk -F[' *'] '{print $4}' | tr '\n' ':')
+   outputs=$(xrandr --listmonitors | sed -ne 's/^ \([0-9]\|[1-9][0-9]\+\):.\+ \([^ ]\+\)$/\2/p' | tr '\n' ':')
 	test -z "$outputs" && return
 
 	pdisplay=${outputs%%:*}
 
 	xrandr --output "$pdisplay" --auto --rotate normal
-	xrandr --output "$pdisplay" --brightness 0.80
+	xrandr --output "$pdisplay" --brightness 1
 	outputs=${outputs#*:}
 
 	test -z "$outputs" && return
    IFS=$':'
    for display in $outputs ; do
-      xrandr --output "$display" --brightness 0.80
+      xrandr --output "$display" --brightness 1
       xrandr --output "$display" --auto --rotate normal --right-of "$pdisplay"
       pdisplay=$display
    done
 }
 
 {
-   set_outputs
+   configure_monitors
    set_wallpaper
-   # disable_input
-   # map_key
+   remap_keys
+   #disable_input
 } >/dev/null 2>&1 &

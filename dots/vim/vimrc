@@ -27,6 +27,10 @@ let g:gruvbox_filetype_hi_groups = 0
 set background=dark
 colorscheme gruvbox8_soft
 
-hi Comment ctermfg=3 ctermbg=NONE
-hi LineNr ctermfg=3 ctermbg=NONE
-hi Normal ctermfg=NONE
+hi LineNr  ctermfg=3    ctermbg=NONE
+hi Normal  ctermfg=NONE
+hi Comment ctermfg=3    ctermbg=NONE cterm=NONE
+hi Special                           cterm=NONE
+hi String                            cterm=NONE
+hi Todo                              cterm=NONE
+

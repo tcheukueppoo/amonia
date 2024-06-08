@@ -9,7 +9,7 @@ install:
 	cp -f dots/bash/bashrc0           ~/.bashrc0
 	cp -f dots/bash/inputrc           ~/.inputrc
 	cp -f dots/dict/dictrc            ~/.dictrc
-	cp -f dots/xorg/autostart-wm      ~/.dwm/
+	cp -f dots/xorg/autostart-wm      ~/.dwm/autostart.sh
 	cp -f dots/xorg/xinitrc           ~/.xinitrc
 	cp -f dots/xorg/Xresources        ~/.Xresources
 	cp -f dots/vim/vimrc              ~/.vimrc
@@ -25,7 +25,7 @@ uninstall:
 	   ~/.inputrc \
 	   ~/.dictrc \
 	   ~/.tmux.conf \
-	   ~/.dwm/autostart-wm \
+	   ~/.dwm/autostart.sh \
 	   ~/.xinitrc \
 	   ~/.Xresources \
 	   ~/.vimrc \
