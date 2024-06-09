@@ -17,6 +17,7 @@ install:
 	cp -f dots/zathura/zathurarc      $(CONF)/zathura/zathurarc
 	cp -f dots/tmux/tmux.conf         ~/.tmux.conf
 	cp -f wallpaper/african_woman_2.png ~/.bg
+	xrdb ~/.Xresources
 
 uninstall:
 	rm -f \

@@ -38,7 +38,7 @@
 slock.color_pam:           #32a883
 slock.text_color:          #bdae93
 
-slock.font:                FiraCode Nerd Font:size=90
+slock.font:                UbuntuMono Nerd Font:size=90
 slock.blur_radius:         20
 
 !! X11 applications setting
@@ -49,11 +49,11 @@ Xft.antialias:             1
 Xft.rgba:                  rgb
 Xft.autohint:              0
 Xft.lcdfilter:             lcddefault
-Xft.font:                  FiraCode Nerd Font:size=20
+Xft.font:                  UbuntuMono Nerd Font:size=20
 
 st.borderpx:               18
 st.alpha:                  0.97
-st.font:                   FiraCode Nerd Font:pixelsize=12
+st.font:                   UbuntuMono Nerd Font:pixelsize=14
 
 !! dwm
 dwm.topbar:      0

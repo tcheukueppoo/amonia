@@ -1,7 +1,7 @@
 #!/bin/sh
 
 tcheukueppo='https://codeberg.org/tcheukueppo'
-firacode='https://github.com/ryanoasis/nerd-fonts/releases/download/v3.2.1/FiraCode.tar.xz'
+ubuntu_mono='https://github.com/ryanoasis/nerd-fonts/releases/download/v3.2.1/UbuntuMono.tar.xz'
 vim_plug='https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
 surf='https://git.suckless.org/surf'
 package_manager=
@@ -27,7 +27,7 @@ die () {
 }
 
 get_package_manager () {
-   if command -v pacman ; then
+   if command -v pacman >/dev/null ; then
      package_manager=pacman
    #elif ...
    fi
@@ -36,62 +36,47 @@ get_package_manager () {
 download_packages () {
    if [ $package_manager = pacman ] ; then
    
-      sudo pacman -Syu man texinfo cronie pkgconf usb_modeswitch              \
-        pulsemixer pulseaudio-equalizer pulseaudio-alsa pulseaudio-bluetooth   \
-        bluez bluez-utils acpi alsa-utils psutils inetutils coreutils dash bc   \
-        sed grep ack perl cpanm jq yq nawk tree lshw psmisc procps-ng sysstat    \
-        e2fsprogs gptfdisk ntfs-3g hdparm dosfstools parted partclone xdg-utils   \
-        ebtables dex fontconfig tar xz git gcc make usbutils                       \
-   
-        # st
-        freetype2                                                                     \
-        # slock
-        imlib2                                                                          \
-   
-        feh zathura zathura-pdf-mupdf zathura-cb zathura-ps                               \
-        xorg xorg-xinit xclip xss-lock xcape xorg-xmodmap                                  \
-   
-        # wayland sway swayidle wofi swaybg foot swaylock wl-clipboard
-        # cups libglvnd sndio xournalpp xchm conky
-   
-        # netutils
-        nmap xinetd bmon socat openssh openbsd-netcat macchanger tcpdump pdnsd                   \
-        ddrescue vulscan ufw tcpreplay dnsmasq lsof tcpflow ipcalc sipcalc wget                   \
-        curl whois networkmanager modemmanager dictd kismet reaver cowpatty                        \
-   
-        # misc
-        htop nnn entr fzf tmux tmate vim scrot flameshot pdfgrep gnuplot w3m                          \
-        firefox tesseract tesseract-data-afr tesseract-data-eng qemu                                   \
-        
-        # docs
-        texlive-bin texlive-core pandoc                                                                   \
-   
-        # media utils
-        ffmpeg imagemagick imagemagick-doc
+      sudo pacman --noconfirm -Syu man texinfo cronie pkgconf usb_modeswitch    \
+        pulsemixer pulseaudio-equalizer pulseaudio-alsa pulseaudio-bluetooth     \
+        bluez bluez-utils acpi alsa-utils psutils inetutils coreutils dash bc     \
+        sed grep ack perl cpanminus jq yq nawk tree lshw psmisc procps-ng          \
+        sysstat e2fsprogs gptfdisk ntfs-3g hdparm dosfstools parted partclone       \
+        xdg-utils dex fontconfig tar xz git gcc make usbutils mdcat                  \
+        freetype2 imlib2 feh zathura zathura-pdf-mupdf zathura-cb zathura-ps          \
+        xorg xorg-xinit xclip xss-lock xcape xorg-xmodmap nmap bmon socat              \
+        openssh openbsd-netcat macchanger tcpdump pdnsd ddrescue vulscan ufw            \
+        tcpreplay dnsmasq lsof tcpflow ipcalc sipcalc wget curl whois                    \
+        networkmanager modemmanager dictd kismet reaver cowpatty htop nnn                 \
+        entr fzf tmux tmate vim scrot flameshot pdfgrep gnuplot w3m firefox                \
+        tesseract tesseract-data-afr tesseract-data-eng qemu texlive-bin                    \
+        texlive-core pandoc ffmpeg imagemagick postgresql postgresql-docs                    \
+        pgcli ncmpcpp mpd
           
-      # surf
+      # Update webkit version to what's available
       webkit_version=`pacman -Ss webkit2gtk | sed -ne 's#extra/webkit2gtk-\([4-9]\.[1-9]\) .*#\1#p'`
       if test -n "$webkit_version" ; then
          sudo pacman -Syu gtk3 gcr webkit2gtk-$webkit_version
       fi
-
+   #elif ...
    else
       die "Unknown package manager."
    fi
 
-   while $# -ne 0 ; do
+   while test $# -ne 0 ; do
       case $1 in
          --docker|-d)
-            if [ $package_manager = pacman ] ; then
-               sudo pacman -Syu libvirt vagrant docker aws-cli
+            if test $package_manager = pacman ; then
+               sudo pacman --noconfirm -Syu libvirt vagrant docker aws-cli
             fi
             ;;
          --nodejs|-n)
-            if [ $package_manager = pacman ] ; then
-               sudo pacman -Syu nodejs ts-node npm yarn
+            if test $package_manager = pacman ; then
+               sudo pacman --noconfirm -Syu nodejs ts-node npm yarn
             fi
             ;;
-         *) usage ;;
+         *)
+            usage
+            ;;
       esac
       shift
    done
@@ -120,7 +105,7 @@ do_clone_build_install () {
 clone_build_install () {
    mkdir -p ~/projects && cd ~/projects
    
-   for r in kst kdwm ksent kdmenu kslock kslstatus amonia ktoolbox ; do
+   for r in kst kdwm ksent kdmenu kslock kslstatus amonia ktoolbox wfmux ; do
       do_clone_build_install "$tcheukueppo/$r" $r
    done
    do_clone_build_install "$surf" surf
@@ -128,14 +113,15 @@ clone_build_install () {
    
 # Configure fonts
 setup_fonts () {
-   mkdir -p ~/.local/share/fonts/firacode && cd ~/.local/share/fonts/firacode
+   mkdir -p ~/.local/share/fonts/ubuntu_mono && cd ~/.local/share/fonts/ubuntu_mono
 
-   test -f FiraCode.tar.xz      \
-     || wget "$firacode"         \
-     && tar -xf FiraCode.tar.xz   \
+   test -f UbuntuMono.tar.xz      \
+     || wget "$ubuntu_mono"        \
+     && tar -xf UbuntuMono.tar.xz   \
      && fc-cache
 }
 
+# Miscellaneous configs
 misc_configs () { 
    if command -v systemctl >/dev/null ; then
       systemctl --user enable pulseaudio
@@ -151,8 +137,8 @@ misc_configs () {
 }
 
 main () {
-   #get_package_manager
-   #download_packages
+   get_package_manager
+   download_packages
    #clone_build_install
    setup_fonts
    #misc_configs
