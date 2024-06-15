@@ -50,7 +50,7 @@ download_packages () {
         entr fzf tmux tmate vim scrot flameshot pdfgrep gnuplot w3m firefox                \
         tesseract tesseract-data-afr tesseract-data-eng qemu texlive-bin                    \
         texlive-core pandoc ffmpeg imagemagick postgresql postgresql-docs                    \
-        pgcli ncmpcpp mpd
+        pgcli ncmpcpp mpd conky
           
       # Update webkit version to what's available
       webkit_version=`pacman -Ss webkit2gtk | sed -ne 's#extra/webkit2gtk-\([4-9]\.[1-9]\) .*#\1#p'`
@@ -88,16 +88,14 @@ do_clone_build_install () {
          rm -vf ./$2
          git clone --depth 1 "$1" || continue   
       fi
-      if test -d $2 ; then
-         if test $2 = surf && test -n $webkit_version ; then
-            sed -i "s/webkit2gtk-[4-9]\.[1-9]/webkit2gtk-$webkit_version/g" config.mk
-         fi
-         cd -L $2              \
-           && sudo make install \
-           && make clean
-         cd ..
-         break
-      fi
+      test -d $2 || continue
+      test $2 = surf && test -n "$webkit_version" \
+         && sed -i "s/webkit2gtk-[4-9]\.[1-9]/webkit2gtk-$webkit_version/g" config.mk
+      cd -L $2              \
+        && sudo make install \
+        && make clean
+      cd ..
+      break
    done
 }
 
@@ -121,8 +119,8 @@ setup_fonts () {
      && fc-cache
 }
 
-# Miscellaneous configs
-misc_configs () { 
+# Miscellaneous setups 
+misc_setups () { 
    if command -v systemctl >/dev/null ; then
       systemctl --user enable pulseaudio
       systemctl --user restart pulseaudio
@@ -134,14 +132,18 @@ misc_configs () {
 
    curl -fLo ~/.vim/autoload/plug.vim --create-dirs "$vim_plug"
    vim -c PlugInstall -c q -c q 
+
+   git config --global init.defaultBranch main
+   git config --global user.name tcheukueppo
+   git config --global user.email tcheukueppo@yandex.com
 }
 
 main () {
    get_package_manager
    download_packages
-   #clone_build_install
+   clone_build_install
    setup_fonts
-   #misc_configs
+   misc_setups
 }
 
 main
