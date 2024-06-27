@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 #### tcheukueppo's bashrc
 
-### aliases
+### Aliases
+alias la='ls -a'
 alias ll='ls --color=auto -lA'
 alias ls='ls --color=auto'
 alias grep='grep --color=auto'
@@ -9,58 +10,65 @@ alias fgrep='fgrep --color=auto'
 alias egrep='egrep --color=auto'
 alias cpanm='cpanm --local-lib=~/perl5'
 
-### envar def
+### Prompts
 PS3='>>> '
 PS2='>> '
-#PS1='\u\[\e[1;35m@\e[0m\]\h \[\e[1;31m\W\e[0m\] \$ '
+PS1='[\u@\h \W]\$ '
 
 export HISTCONTROL=ignoreboth
 export HISTSIZE=1000000
 export HISTFILESIZE=10000000
 export EDITOR=vim
+export PAGER=less
+export CDPATH=.:~/projects:~/Videos
 
-### shell options
+### Shell options
 shopt -s checkwinsize
 
 ### Map keyseq to the below shell functions
 bind -x '"\C-x":__jump_to_dir'
 bind -x '"\C-y":printf "$READLINE_LINE" | xclip -in -selection clip'
 
-# source completion programs to enable programable completion
-lcmp() {
-   if [[ -d "/usr/share/bash-completion/completions/" ]]; then
-      for cmp in /usr/share/bash-completion/completions/*; do source "$cmp"; done
+# Source completion programs to enable programable completion
+lcmp () {
+   local completion_dir='/usr/share/bash-completion/completions/'
+
+   if [[ -d "$completion_dir" ]] ; then
+      for cmp in "$completion_dir"/* ; do
+         source "$cmp"
+      done
    fi
 }
 
-# wrapper to module-starter
-ms() {
+# Wrapper over module-starter
+ms () {
 	[[ $# -eq 2 ]] && module-starter --module="$1" --$2
 }
 
-### internal functions
-__append_path() {
-	local new_path="$1"
+### Internal functions
+__append_path () {
+	local new_path=$1
 
-	[[ -d "$new_path" || -x "$new_path" ]] && { [[ "$PATH" =~ :{0,}${new_path%%/}/?(:{1,}|$) ]] || export PATH="${PATH:+$PATH:}$new_path"; }
+	[[ -d "$new_path" ]] && {
+      [[ "$PATH" =~ :{0,}${new_path%%/}/?(:{1,}|$) ]] || export PATH="${PATH:+$PATH:}$new_path"
+   }
 }
 
-__jump_to_dir() {
+__jump_to_dir () {
 	command -v fzf >/dev/null || return $?
 
-	local direc=$(
-	      history \
-		 | perl -ne 's{^ +\d+ +cd +(?|((?:~(?:|[-\.\w]+))?(?:/(?>(?:[-\.\w]|[\\ ])+))+/?)|('\''(?:/(?>[-\.\w ]*))+/?'\''))}[print $1, "\n"]e' \
-	    | sort  \
-	    | uniq  \
+	local dir=$(
+	      history                                                                                                                            \
+		 | perl -ne 's{^ +\d+ +cd +(?|((?:~(?:|[-\.\w]+))?(?:/(?>(?:[-\.\w]|[\\ ])+))+/?)|('\''(?:/(?>[-\.\w ]*))+/?'\''))}[print $1, "\n"]e'  \
+	    | sort                                                                                                                                 \
+	    | uniq                                                                                                                                  \
 	    | fzf --layout=reverse
 	)
 
-	[[ -n "$direc" ]] && eval "[[ -d $direc ]] && cd $direc"
+	[[ -d "$dir" ]] && cd "$dir"
 }
 
-#__append_path "$HOME/.local/bin"
-#__append_path "$HOME/.raku/bin"
+__append_path "$HOME/.local/bin"
 __append_path "$HOME/bin"
 __append_path "$HOME/node_modules/.bin"
 __append_path "/usr/share/perl6/site/bin"
