@@ -1,116 +1,104 @@
 #!/bin/sh
 
-tcheukueppo='https://codeberg.org/tcheukueppo'
-ubuntu_mono='https://github.com/ryanoasis/nerd-fonts/releases/download/v3.2.1/UbuntuMono.tar.xz'
-vim_plug='https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
-surf='https://git.suckless.org/surf'
-package_manager=
-webkit_version=
-
 usage () {
-   cat <<EOF >&2
-Usage: amonia [-d|--docker] [-n|--nodejs]
-
-Amonia is a toxic sh script which aims to setup a developement
-environment for most of the programming langauges and technologies,
-install and configure minimal tools and applications.
-
-     -d, --docker  install docker and some other related packages
-     -n, --nodejs  install node and some other related packages
-EOF
+   printf 'Usage: %s\n' "$0"
+   printf 'Custom script to setup a usable Linux/BSD environment.\n'
    exit 1
 }
 
 die () {
-   printf "%s\n" "$1" >&2
+   printf "%s: %s.\n" "$0" "$*" >&2
    exit 1
 }
 
-get_package_manager () {
-   if command -v pacman >/dev/null ; then
-     package_manager=pacman
-   #elif ...
-   fi
-}
-
 download_packages () {
-   if [ $package_manager = pacman ] ; then
-   
-      sudo pacman --noconfirm -Syu man texinfo cronie pkgconf usb_modeswitch    \
-        pulsemixer pulseaudio-equalizer pulseaudio-alsa pulseaudio-bluetooth     \
-        bluez bluez-utils acpi alsa-utils psutils inetutils coreutils dash bc     \
-        sed grep ack perl cpanminus jq yq nawk tree lshw psmisc procps-ng          \
-        sysstat e2fsprogs gptfdisk ntfs-3g hdparm dosfstools parted partclone       \
-        xdg-utils dex fontconfig tar xz git gcc make usbutils mdcat                  \
-        freetype2 imlib2 feh zathura zathura-pdf-mupdf zathura-cb zathura-ps          \
-        xorg xorg-xinit xclip xss-lock xcape xorg-xmodmap nmap bmon socat              \
-        openssh openbsd-netcat macchanger tcpdump pdnsd ddrescue vulscan ufw            \
-        tcpreplay dnsmasq lsof tcpflow ipcalc sipcalc wget curl whois                    \
-        networkmanager modemmanager dictd kismet reaver cowpatty htop nnn                 \
-        entr fzf tmux tmate vim scrot flameshot pdfgrep gnuplot w3m firefox                \
-        tesseract tesseract-data-afr tesseract-data-eng qemu texlive-bin                    \
-        texlive-core pandoc ffmpeg imagemagick postgresql postgresql-docs                    \
-        pgcli ncmpcpp mpd conky
-          
-      # Update webkit version to what's available
-      webkit_version=`pacman -Ss webkit2gtk | sed -ne 's#extra/webkit2gtk-\([4-9]\.[1-9]\) .*#\1#p'`
-      if test -n "$webkit_version" ; then
-         sudo pacman -Syu gtk3 gcr webkit2gtk-$webkit_version
-      fi
-   #elif ...
-   else
-      die "Unknown package manager."
-   fi
+   if command -v pacman >/dev/null ; then
 
-   while test $# -ne 0 ; do
-      case $1 in
-         --docker|-d)
-            if test $package_manager = pacman ; then
-               sudo pacman --noconfirm -Syu libvirt vagrant docker aws-cli
-            fi
-            ;;
-         --nodejs|-n)
-            if test $package_manager = pacman ; then
-               sudo pacman --noconfirm -Syu nodejs ts-node npm yarn
-            fi
-            ;;
-         *)
-            usage
-            ;;
-      esac
-      shift
-   done
+      sudo pacman --noconfirm -Syu                         \
+         man texinfo cronie pkgconf usb_modeswitch          \
+         pulsemixer pulseaudio-equalizer pulseaudio-alsa     \
+         pulseaudio-bluetooth bluez bluez-utils acpi          \
+         alsa-utils psutils inetutils coreutils dash           \
+         sed grep ack perl cpanminus jq yq nawk tree            \
+         lshw psmisc procps-ng bc sysstat e2fsprogs              \
+         gptfdisk ntfs-3g hdparm dosfstools parted                \
+         partclone xdg-utils dex fontconfig tar xz git             \
+         gcc make usbutils mdcat freetype2 imlib2 feh               \
+         zathura zathura-pdf-mupdf zathura-cb zathura-ps             \
+         xorg xorg-xinit xclip xss-lock xcape                         \
+         xorg-xmodmap nmap bmon socat openssh                          \
+         openbsd-netcat macchanger tcpdump pdnsd                        \
+         ddrescue vulscan ufw tcpreplay dnsmasq lsof                     \
+         tcpflow iptables ipcalc sipcalc wget curl whois                  \
+         networkmanager modemmanager dictd kismet reaver                   \
+         cowpatty htop nnn entr fzf tmux tmate vim scrot                    \
+         flameshot pdfgrep gnuplot w3m firefox tesseract                     \
+         tesseract-data-afr tesseract-data-eng qemu-desktop                   \
+         texlive-bin texlive-core pandoc ffmpeg                                \
+         imagemagick postgresql postgresql-docs pgcli                           \
+         ncmpcpp mpd conky libvirt parallel bridge-utils                         \
+         net-tools pavucontrol mpc unzip
+         # vagrant docker aws-cli nodejs ts-node npm yarn
+
+      sudo pacman --noconfirm -Rns xorg-xbacklight \
+         && sudo pacman --noconfirm -Syu acpilight
+          
+      # Get webkit version to change surf build config
+      webkit_version=$(pacman -Ss webkit2gtk | sed -ne 's#extra/webkit2gtk-\([4-9]\.[1-9]\) .*#\1#p')
+      test -n "$webkit_version" && {
+         sudo pacman -Syu gtk3 gcr webkit2gtk-$webkit_version
+      }
+   else
+      die "Unknown package manager"
+   fi
 }
 
-do_clone_build_install () {
+clone_build_install () {
    while [ 1 ] ; do
-      if ! test -d $2 ; then
-         rm -vf ./$2
-         git clone --depth 1 "$1" || continue   
-      fi
+      test -d $2                     \
+         || git clone --depth 1 "$1"  \
+         || continue   
+
       test -d $2 || continue
-      test $2 = surf && test -n "$webkit_version" \
+      test $2 = surf                  \
+         && test -n "$webkit_version"  \
          && sed -i "s/webkit2gtk-[4-9]\.[1-9]/webkit2gtk-$webkit_version/g" config.mk
-      cd -L $2              \
-        && sudo make install \
+
+      cd -L $2               \
+        && make               \
+        && sudo make install   \
         && make clean
       cd ..
       break
    done
 }
 
-# Clone, build and install custom software
-clone_build_install () {
+install_custom_software () {
+   surf='https://git.suckless.org/surf'
+   tcheukueppo='https://codeberg.org/tcheukueppo'
+
    mkdir -p ~/projects && cd ~/projects
-   
-   for r in kst kdwm ksent kdmenu kslock kslstatus amonia ktoolbox wfmux ; do
-      do_clone_build_install "$tcheukueppo/$r" $r
+
+   for r in kst   \
+            kdwm   \
+            ksent   \
+            kdmenu   \
+            kslock    \
+            kslstatus  \
+            herbe       \
+            amonia       \
+            ktoolbox      \
+            wfmux ; do
+      clone_build_install "$tcheukueppo/$r" $r
    done
-   do_clone_build_install "$surf" surf
+
+   clone_build_install "$surf" surf
 }
    
 # Configure fonts
-setup_fonts () {
+conf_fonts () {
+   ubuntu_mono='https://github.com/ryanoasis/nerd-fonts/releases/download/v3.2.1/UbuntuMono.tar.xz'
+
    mkdir -p ~/.local/share/fonts/ubuntu_mono && cd ~/.local/share/fonts/ubuntu_mono
 
    test -f UbuntuMono.tar.xz      \
@@ -128,21 +116,68 @@ misc_setups () {
       sudo localectl set-keymap fr
       sudo timedatectl set-timezone Africa/Douala
       sudo systemctl enable systemd-timesyncd
+      sudo systemctl restart systemd-timesyncd
+      systemctl --user enable mpd
+      systemctl --user restart mpd
    fi
 
+   setxkbmap fr
+
+   vim_plug='https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
    curl -fLo ~/.vim/autoload/plug.vim --create-dirs "$vim_plug"
    vim -c PlugInstall -c q -c q 
 
    git config --global init.defaultBranch main
    git config --global user.name tcheukueppo
    git config --global user.email tcheukueppo@yandex.com
+
+   mkdir -p ~/.mpd
+   mkdir -p  ~/.mpd/playlists
+   touch ~/.mpd/database
+   cat <<END >~/.mpd/mpd.conf
+music_directory      "~/Music"
+playlist_directory   "~/.mpd/playlists"
+db_file              "~/.mpd/database"
+log_file             "~/.mpd/log"
+pid_file             "~/.mpd/pid"
+state_file           "~/.mpd/state"
+sticker_file         "~/.mpd/sticker.sql"
+
+audio_output {
+   type     "fifo"
+   name     "Visualizer feed"
+   path     "/tmp/mpd.fifo"
+   format   "44100:16:2"
+}
+audio_output {
+   type  "pulse"
+   name  "My Pulse Output"
+}
+
+END
+   mkdir -p ~/.ncmpcpp
+   cat <<END >~/.ncmpcpp/config
+mpd_music_dir = ~/Music
+mpd_host      = localhost
+mpd_port      = 6600
+mpd_crossfade_time = 5
+
+visualizer_data_source = /tmp/mpd.fifo
+visualizer_in_stereo = yes
+visualizer_output_name = Visualizer feed
+## Available values: spectrum, wave, wave_filled, ellipse.
+visualizer_type = spectrum
+visualizer_fps = 60
+visualizer_autoscale = no
+#visualizer_look = ●▮
+#visualizer_spectrum_smooth_look = yes
+END
 }
 
 main () {
-   get_package_manager
-   download_packages
-   clone_build_install
-   setup_fonts
+   #download_packages
+   #install_custom_software
+   #conf_fonts
    misc_setups
 }
 
