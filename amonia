@@ -37,7 +37,7 @@ download_packages () {
          texlive-bin texlive-core pandoc ffmpeg                                \
          imagemagick postgresql postgresql-docs pgcli                           \
          ncmpcpp mpd conky libvirt parallel bridge-utils                         \
-         net-tools pavucontrol mpc unzip
+         net-tools pavucontrol mpc unzip shellcheck
          # vagrant docker aws-cli nodejs ts-node npm yarn
 
       sudo pacman --noconfirm -Rns xorg-xbacklight \
@@ -124,6 +124,8 @@ misc_setups () {
    setxkbmap fr
 
    vim_plug='https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
+
+   mkdir -p ~/.vim/swaps
    curl -fLo ~/.vim/autoload/plug.vim --create-dirs "$vim_plug"
    vim -c PlugInstall -c q -c q 
 

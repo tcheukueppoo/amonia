@@ -1,0 +1,2 @@
+# Make login shells source bashrc
+[ -n "BASH_VERSION" ] && [ -f ~/.bashrc ] && source ~/.bashrc

@@ -37,9 +37,10 @@ configure_monitors () {
    done
 }
 
-{
+main () {
+   remap_keys
    configure_monitors
    set_wallpaper
-   remap_keys
-   #disable_input
-} >/dev/null 2>&1 &
+} 
+
+main >/dev/null 2>&1 &

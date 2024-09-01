@@ -27,7 +27,7 @@ shopt -s checkwinsize
 
 ### Map keyseq to the below shell functions
 bind -x '"\C-x":__jump_to_dir'
-bind -x '"\C-y":printf "$READLINE_LINE" | xclip -in -selection clip'
+bind -x '"\C-y":printf "%s" "$READLINE_LINE" | xclip -in -selection clip'
 
 # Source completion programs to enable programable completion
 lcmp () {
@@ -65,7 +65,8 @@ __jump_to_dir () {
 	    | fzf --layout=reverse
 	)
 
-	[[ -d "$dir" ]] && cd "$dir"
+   dir=`eval printf "$dir"`
+   [[ -d "$dir" ]] && cd "$dir"
 }
 
 __append_path "$HOME/.local/bin"
@@ -83,3 +84,8 @@ export NNN_FCOLORS="$BLK$CHR$DIR$EXE$REG$HARDLINK$SYMLINK$MISSING$ORPHAN$FIFO$SO
 # Unique color for each context
 # 0-black, 1-red, 2-green, 3-yellow, 4-blue (default), 5-magenta, 6-cyan, 7-white
 export NNN_COLORS='4321'
+
+export CODEBERG_TOKEN=$(cat ~/.berg)
+export GITHUB_TOKEN=$(cat ~/.ghub)
+
+[[ -z "${TMUX:-}" ]] && command -v wfmux >/dev/null && . wfmux new
