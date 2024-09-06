@@ -1,0 +1,14 @@
+mpd_music_dir = ~/Music
+mpd_host      = localhost
+mpd_port      = 6600
+mpd_crossfade_time = 5
+
+visualizer_data_source = /tmp/mpd.fifo
+visualizer_in_stereo = yes
+visualizer_output_name = Visualizer feed
+## Available values: spectrum, wave, wave_filled, ellipse.
+visualizer_type = spectrum
+visualizer_fps = 60
+visualizer_autoscale = no
+#visualizer_look = ●▮
+#visualizer_spectrum_smooth_look = yes

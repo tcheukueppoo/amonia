@@ -38,6 +38,7 @@ download_packages () {
          imagemagick postgresql postgresql-docs pgcli                           \
          ncmpcpp mpd conky libvirt parallel bridge-utils                         \
          net-tools pavucontrol mpc unzip shellcheck
+         chrony
          # vagrant docker aws-cli nodejs ts-node npm yarn
 
       sudo pacman --noconfirm -Rns xorg-xbacklight \
@@ -112,13 +113,16 @@ misc_setups () {
    if command -v systemctl >/dev/null ; then
       systemctl --user enable pulseaudio
       systemctl --user restart pulseaudio
+      systemctl --user enable mpd
+      systemctl --user restart mpd
       sudo hostnamectl hostname madjou
       sudo localectl set-keymap fr
       sudo timedatectl set-timezone Africa/Douala
+      sudo timedatectl set-ntp true
       sudo systemctl enable systemd-timesyncd
       sudo systemctl restart systemd-timesyncd
-      systemctl --user enable mpd
-      systemctl --user restart mpd
+      #sudo systemctl enable chronyd
+      #sudo systemctl start chronyd
    fi
 
    setxkbmap fr
@@ -132,54 +136,12 @@ misc_setups () {
    git config --global init.defaultBranch main
    git config --global user.name tcheukueppo
    git config --global user.email tcheukueppo@yandex.com
-
-   mkdir -p ~/.mpd
-   mkdir -p  ~/.mpd/playlists
-   touch ~/.mpd/database
-   cat <<END >~/.mpd/mpd.conf
-music_directory      "~/Music"
-playlist_directory   "~/.mpd/playlists"
-db_file              "~/.mpd/database"
-log_file             "~/.mpd/log"
-pid_file             "~/.mpd/pid"
-state_file           "~/.mpd/state"
-sticker_file         "~/.mpd/sticker.sql"
-
-audio_output {
-   type     "fifo"
-   name     "Visualizer feed"
-   path     "/tmp/mpd.fifo"
-   format   "44100:16:2"
-}
-audio_output {
-   type  "pulse"
-   name  "My Pulse Output"
-}
-
-END
-   mkdir -p ~/.ncmpcpp
-   cat <<END >~/.ncmpcpp/config
-mpd_music_dir = ~/Music
-mpd_host      = localhost
-mpd_port      = 6600
-mpd_crossfade_time = 5
-
-visualizer_data_source = /tmp/mpd.fifo
-visualizer_in_stereo = yes
-visualizer_output_name = Visualizer feed
-## Available values: spectrum, wave, wave_filled, ellipse.
-visualizer_type = spectrum
-visualizer_fps = 60
-visualizer_autoscale = no
-#visualizer_look = ●▮
-#visualizer_spectrum_smooth_look = yes
-END
 }
 
 main () {
-   #download_packages
-   #install_custom_software
-   #conf_fonts
+   download_packages
+   install_custom_software
+   conf_fonts
    misc_setups
 }
 
