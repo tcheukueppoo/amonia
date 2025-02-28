@@ -76,6 +76,9 @@ __append_path "/usr/share/perl6/site/bin"
 __append_path "/usr/share/perl6/vendor/bin"
 __append_path "/usr/share/perl6/core/bin"
 __append_path "/var/lib/snapd/snap/bin"
+__append_path "$HOME/perl5/bin"
+
+eval "$(perl -I$HOME/perl5/lib/perl5 -Mlocal::lib)"
 
 ## NNN's env variables
 # Colorscheme
