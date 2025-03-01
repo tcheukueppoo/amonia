@@ -34,11 +34,11 @@ download_packages () {
          cowpatty htop nnn entr fzf tmux tmate vim scrot                    \
          flameshot pdfgrep gnuplot w3m firefox tesseract                     \
          tesseract-data-afr tesseract-data-eng qemu-desktop                   \
-         texlive-bin texlive-core pandoc ffmpeg                                \
-         imagemagick postgresql postgresql-docs pgcli                           \
+         texlive-bin texlive-core texlive-latexextra texlive-fontsextra        \
+         pandoc ffmpeg imagemagick postgresql postgresql-docs pgcli             \
          ncmpcpp mpd conky libvirt parallel bridge-utils                         \
-         net-tools pavucontrol mpc unzip shellcheck
-         chrony
+         net-tools pavucontrol mpc unzip shellcheck                               \
+         chrony asciinema nginx which
          # vagrant docker aws-cli nodejs ts-node npm yarn
 
       sudo pacman --noconfirm -Rns xorg-xbacklight \

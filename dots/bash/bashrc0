@@ -42,7 +42,16 @@ lcmp () {
 
 # Wrapper over module-starter
 ms () {
-	[[ $# -eq 2 ]] && module-starter --module="$1" --$2
+   [[ $# -lt 3 ]] && return
+
+   local cmd="module-starter --module=$1"
+   shift
+   for opt in "$@" ; do
+      opt_name=${opt%%=*}
+      arg=${opt##*=}
+      cmd="$cmd --$opt_name='$arg'"
+   done
+   eval "$cmd"
 }
 
 ### Internal functions
