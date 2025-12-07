@@ -18,6 +18,7 @@ call plug#begin()
 "Plug 'lifepillar/vim-gruvbox8'
 Plug 'tcheukueppo/xptemplate'
 Plug 'vim-scripts/DrawIt'
+Plug 'dpelle/vim-LanguageTool'
 
 call plug#end()
 
