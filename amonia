@@ -11,7 +11,7 @@ die () {
    exit 1
 }
 
-download_packages () {
+install_packages () {
    if command -v pacman >/dev/null ; then
 
       sudo pacman --noconfirm -Syu                         \
@@ -38,7 +38,7 @@ download_packages () {
          pandoc ffmpeg imagemagick postgresql postgresql-docs pgcli             \
          ncmpcpp mpd conky libvirt parallel bridge-utils                         \
          net-tools pavucontrol mpc unzip shellcheck                               \
-         chrony asciinema nginx which
+         chrony asciinema nginx which languagetool
          # vagrant docker aws-cli nodejs ts-node npm yarn
 
       sudo pacman --noconfirm -Rns xorg-xbacklight \
@@ -49,6 +49,7 @@ download_packages () {
       test -n "$webkit_version" && {
          sudo pacman -Syu gtk3 gcr webkit2gtk-$webkit_version
       }
+
    else
       die "Unknown package manager"
    fi
