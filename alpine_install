@@ -1,0 +1,146 @@
+#!/bin/sh
+
+# Apk ain't got this but we can still live without: xcape cowpatty tmate xss-lock languagetool mdcat pdnsd
+doas apk add doas-doc xinit xorg-server xorg-server xf86-input-libinput xinit libx11 xf86-input-evdev \
+   xsetroot libx11-dev libxft-dev libxinerama-dev setxkbmap xinput kbd xf86-input-vmmouse mesa-dri-gallium \
+   eudev xf86-video-vesa conky picom xmodmap xmodmap-doc xrandr xrandr-doc libxrandr-dev \
+                                                                                          \
+   busybox busybox-binsh busybox-doc busybox-extras busybox-extras-openrc busybox-ifupdown \
+   busybox-mdev-openrc busybox-openrc busybox-static busybox-suid \
+                        \
+   freetype freetype-doc \
+   bash bash-doc make gcc musl-dev linux-headers linux-pam-dev glib git vim htop tmux \
+                                                            \
+   alsa-utils bluez-alsa bluez-alsa-utils bluez alsa-lib-dev \
+   pulseaudio pulseaudio-doc pulseaudio-utils alsa-plugins-pulse pulsemixer pulseaudio-equalizer \
+   pulseaudio-alsa pulseaudio-bluez pulseaudio-ctl pulseaudio-openrc pavucontrol \
+                  \
+   acpi acpi-utils \
+                                                                                    \
+   file cmus ncmpcpp mpd shellcheck jq jq-doc yq-go yq-go-bash-completion xclip entr \
+   entr-doc nnn fzf fzf-doc pdfgrep ffmpeg ffmpeg-doc ffplay mpv qemu qemu-doc pandoc-cli imagemagick \
+   imagemagick-doc nginx nginx-doc tesseract-ocr tesseract-ocr-data-afr tesseract-ocr-data-eng \
+   tesseract-ocr-data-rus gnuplot gnuplot-doc w3m ack ack-doc parallel parallel-doc \
+   parallel-bash-completion ack ack-doc asciinema asciinema-doc \
+            \
+   pfetch-rs \
+                    \
+   imlib2 imlib2-dev \
+                                                \
+   man-db man-db-doc texinfo texinfo-doc pkgconf \
+                                                                                              \
+   usb-modeswitch usb-modeswitch-udev pciutils psutils-doc lshw lshw-doc ddrescue ddrescue-doc \
+                      \
+   feh scrot flameshot \
+                                                                                            \
+   perl perl-doc perl-app-cpanminus perl-app-cpanminus-doc perl-local-lib perl-local-lib-doc \
+                                                                                                      \
+   nmap nmap-doc bmon bmon-doc socat socat-doc openssh openssh-doc ufw ufw-doc tcpreplay tcpreplay-doc \
+   dnsmasq dnsmasq-doc tcpflow tcpflow-doc iptables iptables-doc \
+   sipcalc sipcalc-doc curl curl-doc networkmanager networkmanager-doc networkmanager-cli \
+   modemmanager modemmanager-doc macchanger macchanger-doc tcpdump tcpdump-doc netcat-openbsd \
+   netcat-openbsd-doc \
+               \
+   firefox vimb \
+                                                                                                 \
+   yt-dlp yt-dlp-bash-completion yt-dlp-core yt-dlp-core-pyc yt-dlp-doc yt-dlp-ejs yt-dlp-ejs-pyc \
+   yt-dlp-ejs-rt-nodejs \
+                                                                                                     \
+   zathura zathura-bash-completion zathura-cb zathura-djvu zathura-doc zathura-lang zathura-pdf-mupdf \
+   zathura-ps \
+                                                                                                               \
+   texlive-dvi texlive texlive-bibtexextra texlive-binextra texlive-context texlive-dbg texlive-dev texlive-doc \
+   texlive-fontutils texlive-full texlive-games texlive-humanities texlive-langextra \
+   texlive-latexextra texlive-latexrecommended texlive-luatex texlive-mathscience texlive-most \
+   texlive-music texlive-pictures texlive-plaingeneric texlive-pstricks texlive-xetex \
+                                                                                                  \
+   sysstat sysstat-doc e2fsprogs e2fsprogs-doc \
+   gptfdisk gptfdisk-doc ntfs-3g ntfs-3g-doc hdparm hdparm-doc dosfstools dosfstools-doc parted \
+   parted-doc partclone partclone-doc usbutils usbutils-doc \
+                                                                \
+   xdg-utils xdg-utils-doc dex dex-doc fontconfig fontconfig-doc \
+                                                             \
+   nodejs nodejs-doc npm npm-doc pnpm pnpm-doc ts ts-doc yarn \
+
+   pgcli 
+   # vagrant aws-cli vulscan dictd kismet reaver
+   # docker net-tools net-tools-doc libvirt libvirt-doc bridge-utils bridge-utils-doc
+   # In Conflict with other packages: psutils zathura-pdf-poppler
+
+
+
+tricky_installations () {
+   pg_version=$(apk search postgresql | sed -ne 's/^postgresql\([0-9]\+\)-[0-9].*/\1/p' | sort -n | tail -n1)
+   test -n "$pg_version" && doas apk add postgresql${pg_version} postgresql${pg_version}-doc
+}
+
+tricky_installations
+
+# Could rather use `/proc/bus/input/devices' to determine eventX for each input
+xorg_input_config () {
+   x_config_dir="$USER/.config/xorg.conf.d"
+
+   mkdir -p "$x_config_dir"
+
+   cat  >"$x_config_dir/evdev.conf" <<-EOL
+Section "InputClass"
+    Identifier      "evdev keyboard"
+    MatchIsKeyboard "on"
+    Driver          "evdev"
+    Option          "CoreKeyboard" "true"
+EndSection
+
+Section "InputClass"
+    Identifier      "evdev mouse"
+    MatchIsPointer  "on"
+    Driver          "evdev"
+    Option          "CorePointer" "true"
+EndSection
+EOL
+
+}
+
+xorg_input_config
+
+pulseaudio_config () {
+   pulse_config_dir="$USER/.config/pulse"
+
+   mkdir -p "$pulse_config_dir"
+
+   cat >"$pulse_config_dir/default.pa" <<EOL
+load-module module-alsa-sink device=hw:1,0 sink_name=second_card
+set-default-sink second_card
+load-module module-udev-detect
+EOL
+
+}
+
+pulseaudio_config
+
+rc_config () {
+   openrc_config_dir="$USER/.config/openrc"
+
+   mkdir -p "$openrc_config_dir"
+   cp /etc/init.d/pulseaudio ~/.config/openrc
+   rc-update add pulseaudio
+   rc-service pulseaudio start
+
+}
+
+rc_config
+
+#mkdir -p ~/.config/openrc
+#
+#rc-update add mpd
+#rc-service mpd start
+#
+#sudo hostnamectl hostname madjou
+#sudo localectl set-keymap fr
+#sudo timedatectl set-timezone Africa/Douala
+#sudo timedatectl set-ntp true
+#sudo systemctl enable systemd-timesyncd
+#sudo systemctl restart systemd-timesyncd
+##sudo systemctl enable chronyd
+##sudo systemctl start chronyd
+
+./misc.sh
