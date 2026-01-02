@@ -2,18 +2,24 @@
 
 # Apk ain't got this but we can still live without: xcape cowpatty tmate xss-lock languagetool mdcat pdnsd
 doas apk add doas-doc xinit xorg-server xorg-server xf86-input-libinput xinit libx11 xf86-input-evdev \
-   xsetroot libx11-dev libxft-dev libxinerama-dev setxkbmap xinput kbd xf86-input-vmmouse mesa-dri-gallium \
-   eudev xf86-video-vesa conky picom xmodmap xmodmap-doc xrandr xrandr-doc libxrandr-dev \
-                                                                                          \
-   busybox busybox-binsh busybox-doc busybox-extras busybox-extras-openrc busybox-ifupdown \
-   busybox-mdev-openrc busybox-openrc busybox-static busybox-suid \
+   xsetroot libx11-dev libxft-dev libxinerama-dev setxkbmap xinput xf86-input-synaptics mesa-dri-gallium \
+   xf86-video-vesa conky picom xmodmap xmodmap-doc xrandr xrandr-doc libxrandr-dev \
+                                                                                                    \
+   openrc-doc openrc-user-pam busybox busybox-binsh busybox-doc busybox-extras busybox-extras-openrc \
+   busybox-ifupdown busybox-mdev-openrc busybox-openrc busybox-static busybox-suid \
+                                                                                                  \
+   gnupg gnupg-dirmngr gnupg-doc gnupg-gpgconf gnupg-keyboxd gnupg-lang gnupg-scdaemon gnupg-utils \
+   gnupg-wks-client \
                         \
    freetype freetype-doc \
    bash bash-doc make gcc musl-dev linux-headers linux-pam-dev glib git vim htop tmux \
-                                                            \
-   alsa-utils bluez-alsa bluez-alsa-utils bluez alsa-lib-dev \
-   pulseaudio pulseaudio-doc pulseaudio-utils alsa-plugins-pulse pulsemixer pulseaudio-equalizer \
-   pulseaudio-alsa pulseaudio-bluez pulseaudio-ctl pulseaudio-openrc pavucontrol \
+                                                                                                   \
+   pipewire pipewire-alsa pipewire-dbg pipewire-dev pipewire-doc pipewire-echo-cancel pipewire-lang \
+   pipewire-libs pipewire-openrc pipewire-pulse pipewire-pulse-openrc pipewire-spa-bluez \
+   pipewire-spa-tools pipewire-spa-vulkan pipewire-tools pipewire-udev pipewire-zeroconf \
+                                                \
+   pam-rundir pam-rundir-doc eudev dbus dbus-doc \
+   alsa-utils bluez-alsa bluez-alsa-utils bluez alsa-lib-dev alsa-plugins-pulse \
                   \
    acpi acpi-utils \
                                                                                     \
@@ -61,12 +67,13 @@ doas apk add doas-doc xinit xorg-server xorg-server xf86-input-libinput xinit li
    xdg-utils xdg-utils-doc dex dex-doc fontconfig fontconfig-doc \
                                                              \
    nodejs nodejs-doc npm npm-doc pnpm pnpm-doc ts ts-doc yarn \
-
+                                                               \
    pgcli 
    # vagrant aws-cli vulscan dictd kismet reaver
    # docker net-tools net-tools-doc libvirt libvirt-doc bridge-utils bridge-utils-doc
    # In Conflict with other packages: psutils zathura-pdf-poppler
 
+   # pulseaudio pulseaudio-doc pulseaudio-utils pulsemixer pulseaudio-equalizer pulseaudio-alsa pulseaudio-bluez pulseaudio-ctl pulseaudio-openrc pavucontrol
 
 
 tricky_installations () {
@@ -76,71 +83,28 @@ tricky_installations () {
 
 tricky_installations
 
-# Could rather use `/proc/bus/input/devices' to determine eventX for each input
-xorg_input_config () {
-   x_config_dir="$USER/.config/xorg.conf.d"
+rc_user_config () {
+   # Set up the `user' service for $USER
+   doas ln -s /etc/init.d/user /etc/init.d/user.$USER
+   doas rc-update add user.$USER
 
-   mkdir -p "$x_config_dir"
+   doas rc-update add alsa
+   doas rc-service alsa start
 
-   cat  >"$x_config_dir/evdev.conf" <<-EOL
-Section "InputClass"
-    Identifier      "evdev keyboard"
-    MatchIsKeyboard "on"
-    Driver          "evdev"
-    Option          "CoreKeyboard" "true"
-EndSection
+   rc-update  --user add dbus default
+   rc-service --user dbus start
 
-Section "InputClass"
-    Identifier      "evdev mouse"
-    MatchIsPointer  "on"
-    Driver          "evdev"
-    Option          "CorePointer" "true"
-EndSection
-EOL
+   rc-update  --user add pipewire default
+   rc-service --user pipewire start
+   rc-update  --user add pipewire-pulse default
+   rc-service --user pipewire-pulse start
 
+   rc-update  --user add mpd default
+   rc-service --user mpd start
 }
 
-xorg_input_config
+rc_user_config
 
-pulseaudio_config () {
-   pulse_config_dir="$USER/.config/pulse"
-
-   mkdir -p "$pulse_config_dir"
-
-   cat >"$pulse_config_dir/default.pa" <<EOL
-load-module module-alsa-sink device=hw:1,0 sink_name=second_card
-set-default-sink second_card
-load-module module-udev-detect
-EOL
-
-}
-
-pulseaudio_config
-
-rc_config () {
-   openrc_config_dir="$USER/.config/openrc"
-
-   mkdir -p "$openrc_config_dir"
-   cp /etc/init.d/pulseaudio ~/.config/openrc
-   rc-update add pulseaudio
-   rc-service pulseaudio start
-
-}
-
-rc_config
-
-#mkdir -p ~/.config/openrc
-#
-#rc-update add mpd
-#rc-service mpd start
-#
-#sudo hostnamectl hostname madjou
-#sudo localectl set-keymap fr
-#sudo timedatectl set-timezone Africa/Douala
-#sudo timedatectl set-ntp true
-#sudo systemctl enable systemd-timesyncd
-#sudo systemctl restart systemd-timesyncd
-##sudo systemctl enable chronyd
-##sudo systemctl start chronyd
+doas sh -c 'printf madjou >/etc/hostname'
 
 ./misc.sh
