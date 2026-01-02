@@ -1,21 +1,20 @@
 #!/bin/sh
 
-# set the desktop session to determine if dwm is running
+# set the desktop session to determine if dwm is running.
 if test "x$DESKTOP_SESSION" = "x" ; then
 	DESKTOP_SESSION='dwm'
 	export DESKTOP_SESSION
 fi
 
 # XDG_CONFIG_HOME defines the directory relative to which
-# user specific configuration should be store, so set it if empty
+# user specific configuration should be store, so set it if empty.
 if test "x$XDG_CONFIG_HOME" = "x" ; then
 	XDG_CONFIG_HOME="$HOME/.config"
 	export XDG_CONFIG_HOME
 	mkdir -p $XDG_CONFIG_HOME
 fi
 
-# XDG_CACHE_HOME defines the directory relative to which
-# user non-essential files are stored, so set if empty.
+# XDG_RUN_TIME defines a per-user temporary directory for runtime data.
 if test "x$XDG_CACHE_HOME" = "x" ; then
 	XDG_CACHE_HOME="$HOME/.cache"
 	export XDG_CACHE_HOME
@@ -37,18 +36,13 @@ test -r "$HOME/.Xdefaults"  && xresources="$xresources $HOME/.Xdefaults"
 cat /dev/null $xresources | xrdb -merge -
 
 {
-   command -v picom     && picom &
+   command -v picom     && picom --backend glx &
    command -v setxkbmap && setxkbmap -layout fr &
    command -v slstatus  && slstatus &
    command -v conky     && conky -dq -c ~/.config/conky/conky.conf
 } >/dev/null 2>&1
 
-#command -v compton >/dev/null \
-#   && compton \
-#      --shadow-offset-x -20 \
-#      --shadow-offset-y -20 \
-#      --shadow &
-
-xset 
+# xset
+# command -v compton >/dev/null && compton --shadow-offset-x -20 --shadow-offset-y -20 --shadow &
 
 exec dwm

@@ -2,7 +2,11 @@
 
 # This script should not be runned directly
 
-run_as=doas
+if [ -f "/etc/alpine-release" ] ; then
+   run_as='doas'
+elif [ -f "/etc/arch-release" ] ; then
+   run_as='sudo'
+fi
 
 clone_build_install () {
    while [ 1 ] ; do
@@ -11,11 +15,6 @@ clone_build_install () {
          || continue   
 
       test -d $2 || continue
-      test $2 = surf && continue
-      test $2 = surf                  \
-         && test -n "$webkit_version"  \
-         && sed -i "s/webkit2gtk-[4-9]\.[1-9]/webkit2gtk-$webkit_version/g" config.mk
-
       cd -L $2               \
         && make               \
         && ${run_as} make install   \
@@ -26,7 +25,6 @@ clone_build_install () {
 }
 
 install_custom_software () {
-   surf='https://git.suckless.org/surf'
    tcheukueppo='https://codeberg.org/tcheukueppo'
 
    mkdir -p ~/projects && cd ~/projects
@@ -43,12 +41,11 @@ install_custom_software () {
             wfmux ; do
       clone_build_install "$tcheukueppo/$r" $r
    done
-
-   clone_build_install "$surf" surf
 }
    
-conf_fonts () {
-   ubuntu_mono='https://github.com/ryanoasis/nerd-fonts/releases/download/v3.2.1/UbuntuMono.tar.xz'
+font_config () {
+   tag=$(curl -s https://api.github.com/repos/ryanoasis/nerd-fonts/releases/latest | jq -r .tag_name)
+   ubuntu_mono="https://github.com/ryanoasis/nerd-fonts/releases/download/$tag/UbuntuMono.tar.xz"
 
    mkdir -p ~/.local/share/fonts/ubuntu_mono && cd ~/.local/share/fonts/ubuntu_mono
 
@@ -78,9 +75,9 @@ git_config () {
 main () {
    install_custom_software
    font_config
-   git_config
-   vim_config
    xorg_config
+   vim_config
+   git_config
 }
 
 main

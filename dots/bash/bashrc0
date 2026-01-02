@@ -97,7 +97,7 @@ export NNN_FCOLORS="$BLK$CHR$DIR$EXE$REG$HARDLINK$SYMLINK$MISSING$ORPHAN$FIFO$SO
 # 0-black, 1-red, 2-green, 3-yellow, 4-blue (default), 5-magenta, 6-cyan, 7-white
 export NNN_COLORS='4321'
 
-export CODEBERG_TOKEN=$(cat ~/.berg)
-export GITHUB_TOKEN=$(cat ~/.ghub)
+test -r ~/.berg && export CODEBERG_TOKEN=$(cat ~/.berg)
+test -r ~/.ghub && export GITHUB_TOKEN=$(cat ~/.ghub)
 
 [[ -z "${TMUX:-}" ]] && command -v wfmux >/dev/null && . wfmux new
