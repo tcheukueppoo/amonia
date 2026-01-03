@@ -1,0 +1,87 @@
+#!/bin/sh
+
+oprojects="${HOME}/oprojects"
+mkdir -p "$oprojects" && cd "$oprojects"
+
+while read proj ; do
+   dir_name=${proj%% *}
+   remote_url=${proj##* }
+
+   test -d "$dir_name" || echo git clone --depth 1 "$remote_url"
+done <<EOL
+Compiler-Development                 https://github.com/true-grue/Compiler-Development    
+MoarVM                               https://github.com/MoarVM/MoarVM    
+Nuklear                              https://github.com/Immediate-Mode-UI/Nuklear    
+android-x86-64-system-image          https://aur.archlinux.org/android-x86-64-system-image.git    
+bashtop                              https://github.com/aristocratos/bashtop    
+cavil                                https://github.com/openSUSE/cavil    
+code-lab                             https://codeberg.org/n0mad/code-lab    
+disruptor                            https://github.com/LMAX-Exchange/disruptor    
+doc                                  https://github.com/Raku/doc    
+duckduckgo                           https://github.com/duckduckgo/duckduckgo    
+ejs                                  https://github.com/yt-dlp/ejs    
+farbfeld                             https://git.suckless.org/farbfeld    
+farbfeld-utils                       https://codeberg.org/tcheukueppo/farbfeld-utils    
+libatomic_ops                        https://github.com/ivmai/libatomic_ops/    
+libcsp                               https://github.com/shiyanhui/libcsp    
+libgrapheme                          https://git.suckless.org/libgrapheme    
+libuv                                https://github.com/libuv/libuv    
+mdp                                  https://github.com/visit1985/mdp    
+mdt                                  https://github.com/basilioss/mdt    
+mediasoup-demo                       https://github.com/versatica/mediasoup-demo/    
+mle                                  https://github.com/adsr/mle    
+mojo                                 https://github.com/mojolicious/mojo    
+perl5                                https://github.com/Perl/perl5    
+pipe-viewer                          https://github.com/trizen/pipe-viewer    
+pjproject                            https://github.com/pjsip/pjproject/    
+qemu-android-x86.git                 https://aur.archlinux.org/qemu-android-x86.git    
+rakudo                               https://github.com/rakudo/rakudo/    
+sidef                                https://github.com/trizen/sidef    
+termbox2                             https://github.com/termbox/termbox2    
+tgme                                 https://github.com/marcotrosi/tgme/    
+vim-perl                             https://github.com/vim-perl/vim-perl    
+vim-raku                             https://github.com/Raku/vim-raku    
+wren                                 https://github.com/wren-lang/wren    
+youtube-dl                           https://github.com/ytdl-org/youtube-dl    
+yt-dlp                               https://github.com/yt-dlp/yt-dlp    
+musl                                 https://git.musl-libc.org/cgit/musl
+EOL
+
+sort_versions () {
+   perl -E 'local $/; @k = sort { $a =~ s/(\d+).*/$1/r <=> $b =~ s/(\d+).*/$1/r || $a =~ s/\d+\.(\d+).*/$1/r <=> $b =~ s/\d+\.(\d+).*/$1/r || $a =~ s/\d+\.\d+\.(\d+).*/$1/r <=> $b =~ s/\d+\.\d+\.(\d+).*/$1/r } split "\n", <<>>; say $_ foreach @k'
+}
+
+warn () {
+   printf '[%s]: %s\n' "$0" "$*" >&2
+}
+
+# Get the latest version of each package
+ffmpeg=$(    curl -s 'https://ffmpeg.org/releases/'                      | sed -ne 's/^.*href="ffmpeg-\(.\+\)\.tar\.xz".*$/\1/p'                      | sed -e 's/^.\+\..\+$/&.0/' | sort_versions | tail -n1 | sed -e 's/^\(.\+\..\+\)\.0$/\1/' | sed -e 's/.*/ffmpeg-&.tar.xz/')
+libev=$(     curl -s 'https://dist.schmorp.de/libev/Attic/'              | sed -ne 's/^.*href="libev-\(.\+\)\.tar\.gz".*$/\1/p'                                                    | sort_versions | tail -n1                                    | sed -e 's/.*/libev-&.tar.gz/')
+lua=$(       curl -s 'https://www.lua.org/ftp/'                          | sed -ne 's/^.*HREF="lua-\([0-9]\+\.[0-9]\+\.[0-9]\+\)\.tar\.gz".*$/\1/p'                                | sort_versions | tail -n1                                    | sed -e 's/.*/lua-&.tar.gz/')
+lua_tests=$( curl -s 'https://www.lua.org/tests/'                        | sed -ne 's/^.*HREF="lua-\(.*\)-tests.tar.gz".*/\1/p'                                                    | sort_versions | tail -n1                                    | sed -e 's/.*/lua-&-tests.tar.gz/')
+qemu=$(      curl -s 'https://download.qemu.org/'                        | sed -ne 's#.*href="/qemu-\([0-9]\+\.[0-9]\+\.[0-9]\+\)\.tar\.xz".*#\1#p'                                | sort_versions | tail -n1                                    | sed -e 's/.*/qemu-&.tar.xz/')
+tcc=$(       curl -s 'http://download.savannah.gnu.org/releases/tinycc/' | sed -ne 's/.*href="tcc-\([0-9]\+.[0-9]\+\.[0-9]\+\)\.tar\.bz2".*/\1/p'                                  | sort_versions | tail -n1                                    | sed -e 's/.*/tcc-&.tar.bz2/')
+ 
+while read proj ; do
+   base_link=${proj##* }
+   var=${proj%% *}
+
+   pkg_name=$(eval printf '%s' '$'$var)
+   if test -n "$pkg_name" ; then
+      wget "${base_link}${pkg_name}"
+      test -f "$pkg_name" && tar -xf "$pkg_name" && continue
+      warn "Unexpected error occurred when downloading $lua's source code."
+   else
+      warn "Couldn't determine download URL of $var."
+   fi
+
+done <<EOL
+ffmpeg     https://ffmpeg.org/releases/
+libev      https://dist.schmorp.de/libev/Attic/
+lua        https://www.lua.org/ftp/
+lua_tests  https://www.lua.org/tests/
+qemu       https://download.qemu.org/
+tcc        http://download.savannah.gnu.org/releases/tinycc/
+EOL
+

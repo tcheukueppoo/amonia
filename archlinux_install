@@ -35,7 +35,6 @@ test -n "$webkit_version" && {
    sudo pacman -Syu gtk3 gcr webkit2gtk-$webkit_version
 }
 
-
 systemctl --user enable pulseaudio
 systemctl --user restart pulseaudio
 systemctl --user enable mpd
