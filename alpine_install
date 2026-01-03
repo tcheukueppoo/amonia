@@ -107,4 +107,5 @@ rc_user_config
 
 doas sh -c 'printf madjou >/etc/hostname'
 
-./misc.sh
+./misc
+./source_down

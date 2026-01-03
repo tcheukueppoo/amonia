@@ -7,7 +7,7 @@ while read proj ; do
    dir_name=${proj%% *}
    remote_url=${proj##* }
 
-   test -d "$dir_name" || echo git clone --depth 1 "$remote_url"
+   test -d "$dir_name" || git clone --depth 1 "$remote_url"
 done <<EOL
 Compiler-Development                 https://github.com/true-grue/Compiler-Development    
 MoarVM                               https://github.com/MoarVM/MoarVM    
@@ -34,7 +34,7 @@ mojo                                 https://github.com/mojolicious/mojo
 perl5                                https://github.com/Perl/perl5    
 pipe-viewer                          https://github.com/trizen/pipe-viewer    
 pjproject                            https://github.com/pjsip/pjproject/    
-qemu-android-x86.git                 https://aur.archlinux.org/qemu-android-x86.git    
+qemu-android-x86                     https://aur.archlinux.org/qemu-android-x86.git    
 rakudo                               https://github.com/rakudo/rakudo/    
 sidef                                https://github.com/trizen/sidef    
 termbox2                             https://github.com/termbox/termbox2    
@@ -44,9 +44,10 @@ vim-raku                             https://github.com/Raku/vim-raku
 wren                                 https://github.com/wren-lang/wren    
 youtube-dl                           https://github.com/ytdl-org/youtube-dl    
 yt-dlp                               https://github.com/yt-dlp/yt-dlp    
-musl                                 https://git.musl-libc.org/cgit/musl
+musl                                 git://git.musl-libc.org/musl
 EOL
 
+exit
 sort_versions () {
    perl -E 'local $/; @k = sort { $a =~ s/(\d+).*/$1/r <=> $b =~ s/(\d+).*/$1/r || $a =~ s/\d+\.(\d+).*/$1/r <=> $b =~ s/\d+\.(\d+).*/$1/r || $a =~ s/\d+\.\d+\.(\d+).*/$1/r <=> $b =~ s/\d+\.\d+\.(\d+).*/$1/r } split "\n", <<>>; say $_ foreach @k'
 }
@@ -71,7 +72,7 @@ while read proj ; do
    if test -n "$pkg_name" ; then
       wget "${base_link}${pkg_name}"
       test -f "$pkg_name" && tar -xf "$pkg_name" && continue
-      warn "Unexpected error occurred when downloading $lua's source code."
+      warn "Unexpected error occurred when downloading $var's source code."
    else
       warn "Couldn't determine download URL of $var."
    fi

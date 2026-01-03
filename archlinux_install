@@ -48,4 +48,5 @@ sudo systemctl restart systemd-timesyncd
 #sudo systemctl enable chronyd
 #sudo systemctl start chronyd
 
-./misc.sh
+./misc
+./source_down
