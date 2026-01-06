@@ -44,14 +44,14 @@ install_custom_software () {
 }
    
 font_config () {
-   tag=$(curl -s https://api.github.com/repos/ryanoasis/nerd-fonts/releases/latest | jq -r .tag_name)
-   ubuntu_mono="https://github.com/ryanoasis/nerd-fonts/releases/download/$tag/UbuntuMono.tar.xz"
+   tag=$(curl -s https://api.github.com/repos/subframe7536/maple-font/releases/latest | jq -r .tag_name)
+   maple_mono="https://github.com/subframe7536/maple-font/releases/download/$tag/MapleMono-TTF.zip"
 
-   mkdir -p ~/.local/share/fonts/ubuntu_mono && cd ~/.local/share/fonts/ubuntu_mono
+   mkdir -p ~/.local/share/fonts/maple_mono && cd ~/.local/share/fonts/maple_mono
 
-   test -f UbuntuMono.tar.xz      \
-     || wget "$ubuntu_mono"        \
-     && tar -xf UbuntuMono.tar.xz   \
+   test -f MapleMonoNL-TTF.zip   \
+     || wget "$maple_mono"        \
+     && unzip MapleMonoNL-TTF.zip  \
      && fc-cache
 }
 
