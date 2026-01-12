@@ -2,14 +2,15 @@
 
 # Apk ain't got this but we can still live without: xcape cowpatty tmate xss-lock languagetool mdcat pdnsd
 doas apk add doas-doc xinit xorg-server xorg-server xf86-input-libinput xinit libx11 xf86-input-evdev \
-   xsetroot libx11-dev libxft-dev libxinerama-dev setxkbmap xinput xf86-input-synaptics mesa-dri-gallium \
-   xf86-video-vesa conky picom xmodmap xmodmap-doc xrandr xrandr-doc libxrandr-dev \
+   xsetroot libx11-dev libxft-dev libxinerama-dev setxkbmap xinput xf86-input-synaptics \
+   mesa-dri-gallium xf86-video-vesa conky picom xmodmap xmodmap-doc xrandr xrandr-doc libxrandr-dev \
+   xwininfo xwininfo-doc xkbcli xkbcli-doc \
                                                                                                     \
    openrc-doc openrc-user-pam busybox busybox-binsh busybox-doc busybox-extras busybox-extras-openrc \
    busybox-ifupdown busybox-mdev-openrc busybox-openrc busybox-static busybox-suid \
                                                                                                   \
    gnupg gnupg-dirmngr gnupg-doc gnupg-gpgconf gnupg-keyboxd gnupg-lang gnupg-scdaemon gnupg-utils \
-   gnupg-wks-client \
+   gnupg-wks-client pass pass-doc pass-otp pass-otp-doc \
                         \
    freetype freetype-doc \
    bash bash-doc make gcc musl-dev linux-headers linux-pam-dev glib git vim htop tmux \
@@ -27,7 +28,7 @@ doas apk add doas-doc xinit xorg-server xorg-server xf86-input-libinput xinit li
    entr-doc nnn fzf fzf-doc pdfgrep ffmpeg ffmpeg-doc ffplay mpv qemu qemu-doc pandoc-cli imagemagick \
    imagemagick-doc nginx nginx-doc tesseract-ocr tesseract-ocr-data-afr tesseract-ocr-data-eng \
    tesseract-ocr-data-rus gnuplot gnuplot-doc w3m ack ack-doc parallel parallel-doc \
-   parallel-bash-completion ack ack-doc asciinema asciinema-doc \
+   parallel-bash-completion ack ack-doc asciinema asciinema-doc ps_mem ps_mem-doc \
             \
    pfetch-rs \
                     \

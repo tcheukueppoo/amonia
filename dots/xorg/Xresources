@@ -53,7 +53,7 @@ Xft.font:                  Maple Mono:size=20
 
 st.borderpx:               18
 st.alpha:                  0.97
-st.font:                   Maple Mono:pixelsize=14
+st.font:                   Maple Mono:pixelsize=12
 
 !! dwm
 dwm.topbar:      0
